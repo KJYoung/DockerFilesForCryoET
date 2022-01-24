@@ -12,11 +12,5 @@ RUN mkdir /home/dynamoRoot/ && \
     tar -xf /home/dynamoRoot/dynamo.tar -C /home/dynamoRoot && \
     rm /home/dynamoRoot/dynamo.tar
 
-RUN bash /home/dynamoRoot/dynamo_activate_linux_shipped_MCR.sh
-
 RUN mv /home/dynamoRoot/MCRLinux/sys/os/glnxa64/libstdc++.so.6 /home/dynamoRoot/MCRLinux/sys/os/glnxa64/libstdc++.so.6.orig
-
-ENV DYNAMO_ROOT /home/dynamoRoot
-ENV LD_LIBRARY_PATH $LD_LIBRARY_PATH:/home/dynamoRoot/MCRLinux/runtime/glnxa64:/home/dynamoRoot/MCRLinux/bin/glnxa64:/home/dynamoRoot/MCRLinux/sys/os/glnxa64
-ENV PATH $PATH:/home/dynamoRoot/matlab/bin:/home/dynamoRoot/matlab/src:/home/dynamoRoot/cuda/bin:/home/dynamoRoot/mpi:/home/dynamoRoot/examples:/home/dynamoRoot/doc
-
+RUN echo 'alias dynamocfg="source /home/dynamoRoot/dynamo_activate_linux_shipped_MCR.sh"' >> ~/.bashrc
