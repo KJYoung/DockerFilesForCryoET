@@ -1,8 +1,9 @@
-# DockerFilesForCryoET
-Working on a Docker
+# Working on a Docker
 ※ Terminal input is written as $echo form.
 ※ Disclaimer : The following information might not be the best way. However, it is correct way for now and the current settings of server(2022/Jan)...
-Docker General
+
+## Docker General
+
 1. Docker is different from Virtual Machine! Docker engine is located in the upper level compared to host OS(Therefore, it is much faster[Memory access, File I/O, Network access, ...] than VM). More theoretical stuffs could be accessed from google:)
 2. Before starting to work with docker, you might need to request the docker user permission to the Server administrator. If you want to check the permission, you can test with some commands(such as “$docker ps”, “$docker images”, ...)
 3. Docker helps you to make the independent environment for each programs or purpose. When we use Docker, there is two key concepts : Docker image, Docker container.
@@ -15,28 +16,30 @@ Docker General
 5. All of the docker commands are formatted as “$docker <command>” form.
   1. (ex.) $docker images, $docker ps, $docker build, $docker run, ... 
 
-Docker Commands..
-1. search : Search the pre-existing images from the Dockerhub.
-  1. (ex.) docker search <keyword>
-2. pull : Download the docker image from the Dockerhub.
-  1. (ex.) docker pull <image name>:<tag>
-  2. For  <tag>, you can just give “latest”.
-3. images : Print all the docker images you have now.
-  1. (ex.) docker images
-4. build : Make a docker image from the Dockerfile.
-  1. (ex.) docker build <options> <location of Dockerfile>
-  2. With --tag option, you can specify the tag of the images.
-5. run : Make a docker container from the existing docker image.
-  1. (ex.) docker run <options> <image name> <file to execute>
-  2. Generally, you would use run command with -it, --name, --rm, (-e, --net=host [for GUI]) options.
-6. ps : Print the list of running containers. (With -a option, also print the stopped containers)
-  1. (ex.) docker ps -a
-7. rm, rmi : Remove a container or an image, respectively. (With -f option, force the remove)
-There are many other commands(start, stop, restart, attach, history, cp, commit, diff, inspect, push, ...). However, if you just want to use already-built docker images, run command is sufficient for the purpose! 
-Docker Build & Run
-Write the Dockerfile.
-To build our own new docker image, we should make a Dockerfile. The following code block is the example of Dockerfile(modified from Dockerfile for Eman2).
+## Docker Commands..
 
+1. search : Search the pre-existing images from the Dockerhub.
+    * (ex.) docker search <keyword>
+2. pull : Download the docker image from the Dockerhub.
+    * (ex.) docker pull <image name>:<tag>
+    * For  <tag>, you can just give “latest”.
+3. images : Print all the docker images you have now.
+    * (ex.) docker images
+4. build : Make a docker image from the Dockerfile.
+    * (ex.) docker build <options> <location of Dockerfile>
+    * With --tag option, you can specify the tag of the images.
+5. run : Make a docker container from the existing docker image.
+    * (ex.) docker run <options> <image name> <file to execute>
+    * Generally, you would use run command with -it, --name, --rm, (-e, --net=host [for GUI]) options.
+6. ps : Print the list of running containers. (With -a option, also print the stopped containers)
+    * (ex.) docker ps -a
+7. rm, rmi : Remove a container or an image, respectively. (With -f option, force the remove)
+8. There are many other commands(start, stop, restart, attach, history, cp, commit, diff, inspect, push, ...). However, if you just want to use already-built docker images, run command is sufficient for the purpose!
+  
+## Docker Build & Run
+### Write the Dockerfile.
+To build our own new docker image, we should make a Dockerfile. The following code block is the example of Dockerfile(modified from Dockerfile for Eman2).
+```
 FROM ubuntu:latest
 
 # Comment  
@@ -53,7 +56,7 @@ RUN conda install eman-deps=25 -c cryoem -c defaults -c conda-forge -y
 
 COPY ./setupGUI.sh ./home/
 ENTRYPOINT ["bash", "./home/setupGUI.sh"]
-
+```
 As you can see from the example above, Dockerfile has a simple grammar, “<COMMAND> <ARGUMENT>”
 1. First of all, you have to specify the basis of your docker image with FROM.
   1. “FROM scratch” : basis as an empty image
