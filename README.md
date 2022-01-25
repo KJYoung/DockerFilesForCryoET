@@ -57,41 +57,42 @@ RUN conda install eman-deps=25 -c cryoem -c defaults -c conda-forge -y
 COPY ./setupGUI.sh ./home/
 ENTRYPOINT ["bash", "./home/setupGUI.sh"]
 ```
+  
 As you can see from the example above, Dockerfile has a simple grammar, “<COMMAND> <ARGUMENT>”
 1. First of all, you have to specify the basis of your docker image with FROM.
-  1. “FROM scratch” : basis as an empty image
-  2. “FROM ubuntu:latest” : basis as an latest ubuntu image
+    * “FROM scratch” : basis as an empty image
+    * “FROM ubuntu:latest” : basis as an latest ubuntu image
 2. Then, you can specify what you want to do in the container.
   1. MAINTAINER
-    1. Specify the image’s author metadata.
+        * Specify the image’s author metadata.
   2. RUN
-    1. Run the shell script or commands. During the docker image building, commands cannot get a user-input. Therefore, you have to deal with some input-needed commands. (ex. apt-get install commands should be used with -y options. Moreover, some program(such as tzdata, keyboard-configuration) require user-input during installation even with the -y option so that you have to deal with those problem.)
+        * Run the shell script or commands. During the docker image building, commands cannot get a user-input. Therefore, you have to deal with some input-needed commands. (ex. apt-get install commands should be used with -y options. Moreover, some program(such as tzdata, keyboard-configuration) require user-input during installation even with the -y option so that you have to deal with those problem.)
   3. ENV
-    1. Set the environment variable. Don’t use ”=” sign.
-    2. (ex.) ENV PATH $PATH:/usr/local/bin
+        * Set the environment variable. Don’t use ”=” sign.
+        * (ex.) ENV PATH $PATH:/usr/local/bin
   4. COPY
-    1. Copy the file. The destination doesn’t include the file name(just its location!).
-    2. (ex.) COPY ./setupGUI.sh ./home/
-      : Copy from “./setupGUI.sh” to “./home/setupGUI.sh”
+        * Copy the file. The destination doesn’t include the file name(just its location!).
+        * (ex.) COPY ./setupGUI.sh ./home/
+          : Copy from “./setupGUI.sh” to “./home/setupGUI.sh”
   5. ENTRYPOINT
-    1. Execute specified script or command once container is initiated(docker run or docker start).
-    2. Similar with CMD(Slightly different).
-    3. (ex. with sh) ENTRYPOINT touch /home/test.txt
-    4. (ex. without sh) ENTRYPOINT [”/home/test.sh”]
-    5. (ex. without sh with parameter) ENTRYPOINT [”/home/test2.sh”, “--param1=1”, “--param2=2”]
+        * Execute specified script or command once container is initiated(docker run or docker start).
+        * Similar with CMD(Slightly different).
+        * (ex. with sh) ENTRYPOINT touch /home/test.txt
+        * (ex. without sh) ENTRYPOINT [”/home/test.sh”]
+        * (ex. without sh with parameter) ENTRYPOINT [”/home/test2.sh”, “--param1=1”, “--param2=2”]
   6. VOLUME
-    1. equivalent with -v option of docker run command.
+        * equivalent with -v option of docker run command.
   7. ADD, CMD, EXPOSE, ...
 
-Build the Docker image.
+## Build the Docker image.
 If you have valid Dockerfile, you can build the docker image with docker build command only. Let’s see an example. Assume you are in /home and /home/dockerForEMAN has the Dockerfile(filename is “Dockerfile” literally). Then, you can build the Docker image with one of the following commands.
 
-  $ docker build --tag <Image Name> <path for dockerForEMAN directory>
+  ```$ docker build --tag <Image Name> <path for dockerForEMAN directory>```
  
 Then, you can see the generating procedure immediately and the generated image with docker images command.
  
-Run the Docker container.
-Docker Run Options
+## Run the Docker container.
+### Docker Run Options
   -it
     For the interactive bash shell interaction with docker container.
   --name <CONTAINER NAME>
@@ -106,14 +107,15 @@ Docker Run Options
     Port related works : Refer
   -p <Host port number>:<Container port number>
     Open the specific container’s port and connect to the specific host port
-Examples
+### Examples
   $docker run -it --rm --net=host -e DISPLAY --name gui_test gui_kjy
   $docker run -it --rm --name no_gui gui_kjy
   $docker run -it --rm --name disk_share -v /home/kimv/:/home/exinput eman2_kjy
-Other things
+### Other things
 You can get out of the current docker container with “$exit”.
-Docker GUI(Write based on Mac environment)
-Basic GUI Settings
+
+## Docker GUI(Write based on Mac environment)
+### Basic GUI Settings
 1. First, you have to make a connection between server and your Mac machine(marked as local below).
   1. In your local terminal, you have to install xquartz.
     1. >>brew install xquartz
@@ -133,20 +135,25 @@ Basic GUI Settings
   4. [docker container] Finished! However, you might see lots of graphics-related error when you execute the GUI-based program. You should solve these error then(Probably with “install something, set some environment variable, etc”).
 3. You can automate these steps.
   a. Write .sh file like this(Let’s assume this file’s name “setupGUI.sh” and share a same location with Dockerfile).
-  
+
+```  
 #!/bin/bash
 bash 
 xauth add $@
+```
   
   b. Write the following lines in Dockerfile.
-  
+
+```  
 COPY ./setupGUI.sh /home
 ...
 ENTRYPOINT ["bash", "/home/setupGUI.sh"]
+```
   
   c. Then, execute the docker run command with “$(xauth list)”
   (ex.) docker run -it --rm --net=host -e DISPLAY --name kjy_gui2 gui_kjy “$(xauth list)”
-For OpenGL
+
+## For OpenGL
 You should type the following commands in your local terminal!
 
 $defaults write org.xquartz.X11 enable_iglx –bool true
@@ -160,38 +167,38 @@ Docker Images for Cryo-ET
 $ : in the server.
 $$ : in the docker container.
 Dockerfiles are available at https://github.com/KJYoung/DockerFilesForCryoET
-MotionCor2
+### MotionCor2
 $docker run --rm -it --name <NAME> motioncor2_kjy
 $$motioncor2 --help
-Warp
+### Warp
 with pre-compiled version 1.0.0
 $docker run --rm -it --net=host -e DISPLAY --name <NAME> warpcli_kjy "$(xauth list)"
 $$warpcli
 with compiled version 1.0.9 : Currently trying...
-IMOD
+### IMOD
 $docker run --rm -it --name <NAME> --net=host -e DISPLAY imod_kjy "$(xauth list)"
 $$imodcfg
 $$imod
-EMAN2
-with GUI
+### EMAN2
+#### with GUI
 $docker run --rm -it --name <NAME> --net=host -e DISPLAY eman2_kjy "$(xauth list)"
 $$e2version.py
 with GUI : $$e2display.py can be executed.
-
-without GUI
+#### without GUI
 $docker run --rm -it --name <NAME> eman2_kjy
 $$e2version.py
 
-There is many python files can be executed. The following figure shows the procedure to test EMAN2(without GUI, we cannot execute e2display.py.
-
-eman2 test.png
-Dynamo
+There is many python files can be executed. The following figure shows the procedure to test EMAN2(without GUI, we cannot execute e2display.py).
+  
+### Dynamo
 $docker run --rm -it --name <NAME> dynamo_kjy
 $$dynamocfg
 $$dynamo
-CTFFIND4
+
+  ### CTFFIND4
 $docker run --rm -it --name <NAME> ctff_kjy
 $$ctffind
-RELION
+
+  ### RELION
 $docker run --rm -it --name <NAME> relion_kjy
 $$relion_... (There are many scripts to run. ex) relion_prepare_subtomogram)
