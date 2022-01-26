@@ -1,5 +1,5 @@
 # Working on a Docker
-※ Terminal input is written as $echo form.
+※ Terminal input is written as $echo form.   
 ※ Disclaimer : The following information might not be the best way. However, it is correct way for now and the current settings of server(2022/Jan)...
 
 ## Docker General
@@ -36,7 +36,7 @@
 * rm, rmi : Remove a container or an image, respectively. (With -f option, force the remove)
 * There are many other commands(start, stop, restart, attach, history, cp, commit, diff, inspect, push, ...). However, if you just want to use already-built docker images, run command is sufficient for the purpose!
   
-## Docker Build & Run
+## Docker Build & Run.
 ### Write the Dockerfile.
 To build our own new docker image, we should make a Dockerfile. The following code block is the example of Dockerfile(modified from Dockerfile for Eman2).
 ```
@@ -58,7 +58,7 @@ COPY ./setupGUI.sh ./home/
 ENTRYPOINT ["bash", "./home/setupGUI.sh"]
 ```
   
-As you can see from the example above, Dockerfile has a simple grammar, “<COMMAND> <ARGUMENT>”
+As you can see from the example above, Dockerfile has a simple grammar, ```“[COMMAND] [ARGUMENT]”```
 * First of all, you have to specify the basis of your docker image with FROM.
     * “FROM scratch” : basis as an empty image
     * “FROM ubuntu:latest” : basis as an latest ubuntu image
@@ -66,13 +66,15 @@ As you can see from the example above, Dockerfile has a simple grammar, “<COMM
     * MAINTAINER
         * Specify the image’s author metadata.
     * RUN
-        * Run the shell script or commands. During the docker image building, commands cannot get a user-input. Therefore, you have to deal with some input-needed commands. (ex. apt-get install commands should be used with -y options. Moreover, some program(such as tzdata, keyboard-configuration) require user-input during installation even with the -y option so that you have to deal with those problem.)
+        * Run the shell script or commands. During the docker image building, commands cannot get a user-input.   
+          Therefore, you have to deal with some input-needed commands.   
+          (ex. apt-get install commands should be used with -y options. Moreover, some program(such as tzdata, keyboard-configuration) require user-input during installation even with the -y option so that you have to deal with those problem.)
     * ENV
         * Set the environment variable. Don’t use ”=” sign.
         * (ex.) ENV PATH $PATH:/usr/local/bin
     * COPY
         * Copy the file. The destination doesn’t include the file name(just its location!).
-        * (ex.) COPY ./setupGUI.sh ./home/
+        * (ex.) COPY ./setupGUI.sh ./home/   
           : Copy from “./setupGUI.sh” to “./home/setupGUI.sh”
     * ENTRYPOINT
         * Execute specified script or command once container is initiated(docker run or docker start).
@@ -159,16 +161,16 @@ ENTRYPOINT ["bash", "/home/setupGUI.sh"]
 ### For OpenGL
 You should type the following commands in your local terminal!
 
-$defaults write org.xquartz.X11 enable_iglx –bool true
+```$defaults write org.xquartz.X11 enable_iglx –bool true```
 
 This commands make an effect in the following codes(in /opt/X11/bin/startx)
 
   <img width="528" alt="opt-X11-bin-startx_ default write usage" src="https://user-images.githubusercontent.com/10249736/150919840-49d345f6-e0a6-4e7c-8317-3f83facdb27e.png">
 
 ## Docker Images for Cryo-ET
-<NAME> : name for the container
-$ : in the server.
-$$ : in the docker container.
+```<NAME>``` : name for the container   
+$ : in the server.   
+$$ : in the docker container.   
 Dockerfiles are available at https://github.com/KJYoung/DockerFilesForCryoET   
   
 ### MotionCor2
@@ -177,34 +179,58 @@ Dockerfiles are available at https://github.com/KJYoung/DockerFilesForCryoET
   $$motioncor2 --help
 ```
 ### Warp
-with pre-compiled version 1.0.0
-$docker run --rm -it --net=host -e DISPLAY --name <NAME> warpcli_kjy "$(xauth list)"
-$$warpcli
-with compiled version 1.0.9 : Currently trying...
+#### with pre-compiled version 1.0.0
+```
+   $docker run --rm -it --net=host -e DISPLAY --name <NAME> warpcli_kjy "$(xauth list)"
+   $$warpcli
+```
+#### with compiled version 1.0.9 : Currently trying to compile...   
+   
 ### IMOD
-$docker run --rm -it --name <NAME> --net=host -e DISPLAY imod_kjy "$(xauth list)"
-$$imodcfg
-$$imod
+```
+   $docker run --rm -it --name <NAME> --net=host -e DISPLAY imod_kjy "$(xauth list)"
+   $$imodcfg
+   $$imod
+```
 ### EMAN2
 #### with GUI
-$docker run --rm -it --name <NAME> --net=host -e DISPLAY eman2_kjy "$(xauth list)"
-$$e2version.py
-with GUI : $$e2display.py can be executed.
+```
+   $docker run --rm -it --name <NAME> --net=host -e DISPLAY eman2_kjy "$(xauth list)"
+   $$e2version.py
+   // with GUI : $$e2display.py can be executed.
+```
 #### without GUI
-$docker run --rm -it --name <NAME> eman2_kjy
-$$e2version.py
-
+```
+   $docker run --rm -it --name <NAME> eman2_kjy
+   $$e2version.py
+```
 There is many python files can be executed. The following figure shows the procedure to test EMAN2(without GUI, we cannot execute e2display.py).
   
 ### Dynamo
-$docker run --rm -it --name <NAME> dynamo_kjy
-$$dynamocfg
-$$dynamo
-
-  ### CTFFIND4
-$docker run --rm -it --name <NAME> ctff_kjy
-$$ctffind
-
-  ### RELION
-$docker run --rm -it --name <NAME> relion_kjy
-$$relion_... (There are many scripts to run. ex) relion_prepare_subtomogram)
+```
+   $docker run --rm -it --name <NAME> dynamo_kjy
+   $$dynamocfg
+   $$dynamo
+```
+### CTFFIND4
+```
+   $docker run --rm -it --name <NAME> ctff_kjy
+   $$ctffind
+```
+### RELION
+```
+   $docker run --rm -it --name <NAME> relion_kjy
+   $$relion_... (There are many scripts to run. ex) relion_prepare_subtomogram)
+```
+   
+## Docker images are available also in the Dockerhub!
+      * https://hub.docker.com/r/jykim157/motioncor2
+      * https://hub.docker.com/r/jykim157/warpcli
+      * https://hub.docker.com/r/jykim157/imod
+      * https://hub.docker.com/r/jykim157/eman2
+      * https://hub.docker.com/r/jykim157/dynamo
+      * https://hub.docker.com/r/jykim157/ctffind4
+      * https://hub.docker.com/r/jykim157/relion
+## TODO & Doing :
+   * Merged Docker Image as an pipeline   
+   * Compilation for Warp
