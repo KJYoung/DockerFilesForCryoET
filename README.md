@@ -175,51 +175,70 @@ Dockerfiles are available at https://github.com/KJYoung/DockerFilesForCryoET
   
 ### MotionCor2
 ```
-  $docker run --rm -it --name <NAME> motioncor2_kjy
+  $docker pull jykim157/motioncor2:base
+  $docker run --rm -it --name <NAME> jykim157/motioncor2:base
   $$motioncor2 --help
 ```
 ### Warp
 #### with pre-compiled version 1.0.0
 ```
-   $docker run --rm -it --net=host -e DISPLAY --name <NAME> warpcli_kjy "$(xauth list)"
+   $docker pull jykim157/warpcli:base
+   $docker run --rm -it --net=host -e DISPLAY --name <NAME> jykim157/warpcli:base "$(xauth list)"
    $$warpcli
 ```
 #### with compiled version 1.0.9 : Currently trying to compile...   
    
 ### IMOD
 ```
-   $docker run --rm -it --name <NAME> --net=host -e DISPLAY imod_kjy "$(xauth list)"
+   $docker pull jykim157/imod:base
+   $docker run --rm -it --name <NAME> --net=host -e DISPLAY jykim157/imod:base "$(xauth list)"
    $$imodcfg
    $$imod
 ```
 ### EMAN2
 #### with GUI
 ```
-   $docker run --rm -it --name <NAME> --net=host -e DISPLAY eman2_kjy "$(xauth list)"
+   $docker pull jykim157/eman2:base
+   $docker run --rm -it --name <NAME> --net=host -e DISPLAY jykim157/eman2:base "$(xauth list)"
    $$e2version.py
    // with GUI : $$e2display.py can be executed.
 ```
 #### without GUI
 ```
-   $docker run --rm -it --name <NAME> eman2_kjy
+   $docker run --rm -it --name <NAME> jykim157/eman2:base
    $$e2version.py
 ```
 There is many python files can be executed. The following figure shows the procedure to test EMAN2(without GUI, we cannot execute e2display.py).
   
 ### Dynamo
+#### only Dynamo
 ```
-   $docker run --rm -it --name <NAME> dynamo_kjy
+   $docker pull jykim157/dynamo:base
+   $docker run --rm -it --name <NAME> jykim157/dynamo:base
    $$dynamocfg
    $$dynamo
 ```
+####  Extended : with autoalign_dynamo(https://github.com/alisterburt/autoalign_dynamo)[Modified for Docker env.]
+```
+   $docker pull jykim157/dynamo:autoalign
+   $docker run --rm -it --name <NAME> jykim157/dynamo:autoalign
+   $$dynamocfg
+   # For dynamo
+   $$dynamo
+   # For autoalign
+   $$autoalign
+```
+
 ### CTFFIND4
 ```
-   $docker run --rm -it --name <NAME> ctff_kjy
+   $docker pull jykim157/ctffind4:base
+   $docker run --rm -it --name <NAME> jykim157/ctffind4:base
    $$ctffind
 ```
 ### RELION
 ```
-   $docker run --rm -it --name <NAME> relion_kjy
+   $docker pull jykim157/relion:base
+   $docker run --rm -it --name <NAME> jykim157/relion:base
    $$relion_... (There are many scripts to run. ex) relion_prepare_subtomogram)
 ```
    
