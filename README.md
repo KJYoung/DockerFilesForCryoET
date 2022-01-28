@@ -171,7 +171,7 @@ This commands make an effect in the following codes(in /opt/X11/bin/startx)
 ```<NAME>``` : name for the container   
 $ : in the server.   
 $$ : in the docker container.   
-Dockerfiles are available at https://github.com/KJYoung/DockerFilesForCryoET   
+Dockerfiles and More informations are available at https://github.com/KJYoung/DockerFilesForCryoET   
   
 ### MotionCor2
 ```
@@ -218,7 +218,7 @@ There is many python files can be executed. The following figure shows the proce
    $$dynamocfg
    $$dynamo
 ```
-####  Extended : with autoalign_dynamo(https://github.com/alisterburt/autoalign_dynamo)[Modified for Docker env.]
+####  Extended : with [**autoalign_dynamo**](https://github.com/alisterburt/autoalign_dynamo)[Modified for Docker env.]
 ```
    $docker pull jykim157/dynamo:autoalign
    $docker run --rm -it --name <NAME> jykim157/dynamo:autoalign
