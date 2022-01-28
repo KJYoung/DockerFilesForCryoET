@@ -25,6 +25,7 @@ RUN git clone https://github.com/KJYoung/autoalign_dynamo.git && \
     cd /autoalign_dynamo && \
     ./install.sh
 
+ENV LIBGL_ALWAYS_INDIRECT 1
 RUN echo 'alias dynamocfg="source /home/dynamoRoot/dynamo_activate_linux_shipped_MCR.sh"' >> ~/.bashrc
 RUN echo 'alias autoalign="octave --persist /opt/autoalign_dynamo/autoalign_activate.m"' >> ~/.bashrc
 
