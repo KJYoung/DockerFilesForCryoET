@@ -180,11 +180,12 @@ Dockerfiles and More informations are available at https://github.com/KJYoung/Do
   $$motioncor2 --help
 ```
 ### Warp
-#### with pre-compiled version 1.0.0
+#### base : with pre-compiled version 1.0.0 and [**dynamo2m**](https://github.com/alisterburt/dynamo2m)
 ```
    $docker pull jykim157/warpcli:base
    $docker run --rm -it --net=host -e DISPLAY --name <NAME> jykim157/warpcli:base "$(xauth list)"
    $$warpcli
+   $$dynamo2warp
 ```
 #### with compiled version 1.0.9 : Currently trying to compile...   
    
