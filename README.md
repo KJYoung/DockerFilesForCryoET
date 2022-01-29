@@ -129,9 +129,12 @@ Then, you can see the generating procedure immediately and the generated image w
         2. Reboot your local machine.
         3. Use -X option for ssh connection and test your connection.
           (ex.) I tested with the “nautilus”(GUI-based Directory Viewer). If you successfully made a connection, the GUI window would appear after the “nautilus” commands.
-    * Although you already connected server and local, GUI connection seems to be disconnected from time to time if you continue to connect to the server(or when you do some specific action). If the GUI connection is disconnected, you can disconnect from the server and re-connect through ssh again.
-        * If your GUI connection is broken, you would see the messages similar to the following.
-      (org.gnome.Nautilus:13): Gtk-WARNING **: 05:32:09.276: cannot open display: localhost:10.0
+    * Although you already connected server and local, GUI connection seems to be disconnected from time to time if you continue to connect to the server(or when you do some specific action). If the GUI connection is disconnected, you can disconnect from the server and re-connect through ssh again.   
+        * If your GUI connection is broken, you would see the messages similar to the following.   
+      (org.gnome.Nautilus:13): Gtk-WARNING **: 05:32:09.276: cannot open display: localhost:10.0   
+    * __[FOR Windows User!!]__ In your local machine, you have to install VcXsrv.
+        1. You can install VcXsrv in [***here***](https://sourceforge.net/projects/vcxsrv)
+        2. Search about more detailed information. At least, the program's name guide you to the right direction!
 2. Second, you have to make a connection between server and your docker container.
     * [server] Run the following command, and copy the output(if output is multiline, choose just one line or delete others to make single line). The output will change when you re-connect to the server. 
     ```$ xauth list```
@@ -161,13 +164,19 @@ ENTRYPOINT ["bash", "/home/setupGUI.sh"]
       (ex.) docker run -it --rm --net=host -e DISPLAY --name kjy_gui2 gui_kjy “$(xauth list)”
 
 ### For OpenGL
+#### Mac os : Xquartz
 You should type the following commands in your local terminal!
 
 ```$defaults write org.xquartz.X11 enable_iglx –bool true```
 
 This commands make an effect in the following codes(in /opt/X11/bin/startx)
 
-  <img width="528" alt="opt-X11-bin-startx_ default write usage" src="https://user-images.githubusercontent.com/10249736/150919840-49d345f6-e0a6-4e7c-8317-3f83facdb27e.png">
+<img width="528" alt="opt-X11-bin-startx_ default write usage" src="https://user-images.githubusercontent.com/10249736/150919840-49d345f6-e0a6-4e7c-8317-3f83facdb27e.png">
+
+#### Windows os(WSL2, Ubuntu 20.04 LTS) : VcXsrv
+You should configure VcXsrv as following.   
+   1. Unmark Native opengl   
+   2. Put "-ac" into "Additional parameters for VcXsrv"   
 
 ## Docker Images for Cryo-ET
 ```<NAME>``` : name for the container   
