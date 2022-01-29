@@ -219,7 +219,8 @@ There is many python files can be executed. The following figure shows the proce
    $$dynamocfg
    $$dynamo
 ```
-####  Extended : with [**autoalign_dynamo**](https://github.com/alisterburt/autoalign_dynamo)[Modified for Docker env.]
+####  Extended : with [**autoalign_dynamo**](https://github.com/alisterburt/autoalign_dynamo)[Modified for Docker env.]   
+This version is incomplete due to the MATLAB... And I realized that IMOD is also required for the valid operation of autoalign_dynamo as specified in its github readme's prerequisite.
 ```
    $docker pull jykim157/dynamo:autoalign
    $docker run --rm -it --name <NAME> jykim157/dynamo:autoalign
@@ -229,7 +230,7 @@ There is many python files can be executed. The following figure shows the proce
    # For autoalign
    $$autoalign
 ```
-
+#### Extended : with autoalign_dynamo + IMOD (+ MATLAB)
 ### CTFFIND4
 ```
    $docker pull jykim157/ctffind4:base
