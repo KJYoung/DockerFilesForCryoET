@@ -117,8 +117,10 @@ Then, you can see the generating procedure immediately and the generated image w
   ```   
   
 ### Other things
-You can get out of the current docker container with “$exit”.
-
+* You can get out of the current docker container with “$exit”.   
+* Detach from the current container : ``` Ctrl + P then Ctrl + Q ```   
+* Attach into the detached container : ``` docker attach "container name"```
+* [***Detach and Attach***](https://stackoverflow.com/questions/19688314/how-do-you-attach-and-detach-from-dockers-process)   
 ## Docker GUI(Write based on Mac environment)
 ### Basic GUI Settings
 1. First, you have to make a connection between server and your Mac machine(marked as local below).
