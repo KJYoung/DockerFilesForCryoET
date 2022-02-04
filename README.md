@@ -248,7 +248,7 @@ This version is incomplete due to the MATLAB... And I realized that IMOD is also
    $docker run --rm -it --name <NAME> jykim157/ctffind4:base
    $$ctffind
 ```
-### RELION
+### RELION : also GUI available(2022/02/04 Updated).
 ```
    $docker pull jykim157/relion:base
    $docker run --rm -it --name <NAME> jykim157/relion:base
