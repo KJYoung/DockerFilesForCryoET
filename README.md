@@ -181,7 +181,7 @@ You should configure VcXsrv as following.
 ## Docker Images for Cryo-ET
 ```<NAME>``` : name for the container   
 $ : in the server.   
-$$ : in the docker container.   
+\$$ : in the docker container.   
 Dockerfiles and More informations are available at https://github.com/KJYoung/DockerFilesForCryoET   
   
 ### MotionCor2
@@ -222,26 +222,43 @@ Dockerfiles and More informations are available at https://github.com/KJYoung/Do
 ```
 There is many python files can be executed. The following figure shows the procedure to test EMAN2(without GUI, we cannot execute e2display.py).
   
-### Dynamo
-#### only Dynamo
+### [Dynamo](https://wiki.dynamo.biozentrum.unibas.ch/w/index.php/Main_Page) + [IMOD](https://bio3d.colorado.edu/imod/doc/guide.html)
+#### Extended : with [**autoalign_dynamo**](https://github.com/alisterburt/autoalign_dynamo)[Modified for Docker env.]
+  This version is incomplete due to the MATLAB! IMOD is also required for the valid operation of autoalign_dynamo as specified in its github readme's prerequisite.
+#### Helpful reference : [Dynamo GPU configuration](https://wiki.dynamo.biozentrum.unibas.ch/w/index.php/GPU#Installation)
+#### Dynamo + IMOD + dynamo2m + autoalign_dynamo
 ```
    $docker pull jykim157/dynamo:base
    $docker run --rm -it --name <NAME> jykim157/dynamo:base
-   $$dynamocfg
-   $$dynamo
+  
+   $$ (First, you should install the MATLAB with the following 5 toolboxes.)
+    #### For autoalign_dynamo
+      * Computer vision toolbox
+      * Curve fitting toolbox
+      * Image processing toolbox
+      * Parallel computing toolbox
+    #### For execution of autoalign_dynamo!!
+      * Statistics and machine learning toolbox
+   $$ (Then, ctrl P + Q to pause the current container and execute the following.)
+   $docker ps (Then, copy the container's ID.)
+   $docker commit <copied ID> <jykim157/dynamo:matlabinstall> (you can rename the image surely.)
+
+   ######################################################################################################
+
+   $$source /home/dynamoRoot/dynamo_activate_linux_shipped_MCR.sh
+   $$ (execute dynamo project exe file! (standalong project))
+   OR
+   $$matlab
+      <For dynamo>
+      >> run /home/dynamoRoot/dynamo_activate.m
+      >> dcp, dcm, ...
+      <For autoalign_dynamo>
+      >> run /opt/autoalign_dynamo/autoalign_activate.m
+      >> dautoalign4warp, warp2catalogue, ...
+
+   $$imodcfg
+   $$imod
 ```
-####  Extended : with [**autoalign_dynamo**](https://github.com/alisterburt/autoalign_dynamo)[Modified for Docker env.]   
-This version is incomplete due to the MATLAB... And I realized that IMOD is also required for the valid operation of autoalign_dynamo as specified in its github readme's prerequisite.
-```
-   $docker pull jykim157/dynamo:autoalign
-   $docker run --rm -it --name <NAME> jykim157/dynamo:autoalign
-   $$dynamocfg
-   # For dynamo
-   $$dynamo
-   # For autoalign
-   $$autoalign
-```
-#### Extended : with autoalign_dynamo + IMOD (+ MATLAB)
 ### CTFFIND4
 ```
    $docker pull jykim157/ctffind4:base
