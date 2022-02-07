@@ -143,28 +143,24 @@ Then, you can see the generating procedure immediately and the generated image w
     * [docker container] Run the following command.
     ```$ xauth add <the copied output>```
     * [docker container] Finished! However, you might see lots of graphics-related error when you execute the GUI-based program. You should solve these error then(Probably with “install something, set some environment variable, etc”).
-3. You can automate these steps.
+3. You can automate these steps.   
     a. Write .sh file like this(Let’s assume this file’s name “setupGUI.sh” and share a same location with Dockerfile).
+    ```shell  
+    #!/bin/bash
+    bash 
+    xauth add $@
+    ```
+    b. Write the following lines in Dockerfile.   
+    ```shell  
+    COPY ./setupGUI.sh /home
+    ...
+    ENTRYPOINT ["bash", "/home/setupGUI.sh"]
+    ```
+    c. Then, execute the docker run command with “\$(xauth list)”   
+        (ex.) docker run -it --rm --net=host -e DISPLAY --name kjy_gui2 gui_kjy “$(xauth list)”
 
-```  
-#!/bin/bash
-bash 
-xauth add $@
-```
-  
-    b. Write the following lines in Dockerfile.
-
-```  
-COPY ./setupGUI.sh /home
-...
-ENTRYPOINT ["bash", "/home/setupGUI.sh"]
-```
-  
-    c. Then, execute the docker run command with “$(xauth list)”
-      (ex.) docker run -it --rm --net=host -e DISPLAY --name kjy_gui2 gui_kjy “$(xauth list)”
-
-### For OpenGL
-#### Mac os : Xquartz
+## For OpenGL activation in X11 forwarding!
+### Mac os : Xquartz
 You should type the following commands in your local terminal!
 
 ```$defaults write org.xquartz.X11 enable_iglx –bool true```
@@ -173,7 +169,7 @@ This commands make an effect in the following codes(in /opt/X11/bin/startx)
 
 <img width="528" alt="opt-X11-bin-startx_ default write usage" src="https://user-images.githubusercontent.com/10249736/150919840-49d345f6-e0a6-4e7c-8317-3f83facdb27e.png">
 
-#### Windows os(WSL2, Ubuntu 20.04 LTS) : VcXsrv
+### Windows os(WSL2, Ubuntu 20.04 LTS) : VcXsrv
 You should configure VcXsrv as following.   
    1. Unmark Native opengl   
    2. Put "-ac" into "Additional parameters for VcXsrv"   
@@ -231,20 +227,16 @@ There is many python files can be executed. The following figure shows the proce
    $docker pull jykim157/dynamoimod:base
    $docker run --rm -it --name <NAME> jykim157/dynamoimod:base
   
-   $$ (First, you should install the MATLAB with the following 5 toolboxes.)
-    #### For autoalign_dynamo
-      * Computer vision toolbox
-      * Curve fitting toolbox
-      * Image processing toolbox
-      * Parallel computing toolbox
-    #### For execution of autoalign_dynamo!!
-      * Statistics and machine learning toolbox
-   $$ (Then, ctrl P + Q to pause the current container and execute the following.)
+   $$ cd matlab && ./install (First, you should install the MATLAB with the following 5 toolboxes.)
+   $$ ^P and ^Q (Then, ctrl P + Q to pause the current container and execute the following.)
    $docker ps (Then, copy the container's ID.)
    $docker commit <copied ID> <jykim157/dynamoimod:matlabinstall> (you can rename the image surely.)
-
-   ######################################################################################################
-
+```
+   Required toolbox   
+      * [**for autolalign_dynamo**] Computer vision toolbox, Curve fitting toolbox, Image processing toolbox, Parallel computing toolbox   
+      * [**for execution of autoalign_dynamo**] Statistics and machine learning toolbox
+   ########################## After the installation : Ready to use! ##########################
+```
    $$source /home/dynamoRoot/dynamo_activate_linux_shipped_MCR.sh
    $$ (execute dynamo project exe file! (standalong project))
    OR
@@ -273,13 +265,15 @@ There is many python files can be executed. The following figure shows the proce
 ```
    
 ## Docker images are available also in the Dockerhub!
-   * https://hub.docker.com/r/jykim157/motioncor2
-   * https://hub.docker.com/r/jykim157/warpcli
-   * https://hub.docker.com/r/jykim157/imod
-   * https://hub.docker.com/r/jykim157/eman2
-   * https://hub.docker.com/r/jykim157/dynamo
-   * https://hub.docker.com/r/jykim157/ctffind4
-   * https://hub.docker.com/r/jykim157/relion
-## TODO & Doing :
-   * Merged Docker Image as an pipeline   
-   * Compilation for Warp
+  * [MotionCor2 hub](https://hub.docker.com/r/jykim157/motioncor2)
+  * [Warpcli hub](https://hub.docker.com/r/jykim157/warpcli)
+  * [Dynamo IMOD hub](https://hub.docker.com/repository/docker/jykim157/dynamoimod)
+  * [EMAN2 hub](https://hub.docker.com/r/jykim157/eman2)
+  * [CTFFIND4 hub](https://hub.docker.com/r/jykim157/ctffind4)
+  * [RELION hub](https://hub.docker.com/r/jykim157/relion)
+  * [Dynamo hub : deprecated](https://hub.docker.com/r/jykim157/dynamo)
+  * [IMOD hub : deprecated](https://hub.docker.com/r/jykim157/imod)
+## TODO & Doing :   
+   * Runtime error for Warp
+   * RELION mpi, GPU, cuda
+   * Warp, Dynamo Feature study
