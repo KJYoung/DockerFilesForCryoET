@@ -228,8 +228,8 @@ There is many python files can be executed. The following figure shows the proce
 #### Helpful reference : [Dynamo GPU configuration](https://wiki.dynamo.biozentrum.unibas.ch/w/index.php/GPU#Installation)
 #### Dynamo + IMOD + dynamo2m + autoalign_dynamo
 ```
-   $docker pull jykim157/dynamo:base
-   $docker run --rm -it --name <NAME> jykim157/dynamo:base
+   $docker pull jykim157/dynamoimod:base
+   $docker run --rm -it --name <NAME> jykim157/dynamoimod:base
   
    $$ (First, you should install the MATLAB with the following 5 toolboxes.)
     #### For autoalign_dynamo
@@ -241,7 +241,7 @@ There is many python files can be executed. The following figure shows the proce
       * Statistics and machine learning toolbox
    $$ (Then, ctrl P + Q to pause the current container and execute the following.)
    $docker ps (Then, copy the container's ID.)
-   $docker commit <copied ID> <jykim157/dynamo:matlabinstall> (you can rename the image surely.)
+   $docker commit <copied ID> <jykim157/dynamoimod:matlabinstall> (you can rename the image surely.)
 
    ######################################################################################################
 
