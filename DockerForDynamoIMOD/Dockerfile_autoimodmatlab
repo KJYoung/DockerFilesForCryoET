@@ -10,17 +10,31 @@ RUN apt-get update && apt-get install -y \
     libxcb-xinerama0 libxrender1 libxkbcommon-dev \
     xauth \
     fontconfig \
-    mesa-utils xorg git \
-    pip libxt6 \
-    nvidia-cuda-toolkit
+    mesa-utils xorg \ 
+    git g++ cmake nvidia-cuda-toolkit \
+    build-essential \
+    mpi-default-bin \
+    mpi-default-dev \
+    libfftw3-dev \
+    libtiff-dev \
+    pip libxt6 octave
 
+#mesa-utils for glxgears
 RUN wget https://download.java.net/openjdk/jdk11/ri/openjdk-11+28_linux-x64_bin.tar.gz && \
     tar -xvf openjdk-11+28_linux-x64_bin.tar.gz && \
     rm openjdk-11+28_linux-x64_bin.tar.gz
 
+RUN apt-get install -y software-properties-common && \
+    wget https://developer.download.nvidia.com/compute/cuda/repos/ubuntu1804/x86_64/cuda-ubuntu1804.pin && \
+    mv cuda-ubuntu1804.pin /etc/apt/preferences.d/cuda-repository-pin-600 && \
+    apt-key adv --fetch-keys https://developer.download.nvidia.com/compute/cuda/repos/ubuntu1804/x86_64/7fa2af80.pub && \
+    add-apt-repository "deb https://developer.download.nvidia.com/compute/cuda/repos/ubuntu1804/x86_64/ /" && \
+    apt-get update && apt-get -y install cuda
+
 RUN ln -s /usr/bin/python3 /usr/bin/python
 
-ENV PATH /jdk-11/bin:$PATH
+ENV PATH $PATH:/usr/local/cuda-11.6/bin:/jdk-11/bin
+ENV CUDA_PATH /usr/local/cuda-11.6/bin
 ENV IMOD_DIR /usr/local/IMOD
 ENV LIBGL_ALWAYS_INDIRECT 1
 ENV QT_XKB_CONFIG_ROOT /usr/share/X11/xkb
@@ -46,16 +60,17 @@ RUN mkdir /home/dynamoRoot/ && \
     mv dynamo-v-1.1.532_MCR-9.9.0_GLNXA64_withMCR.tar /home/dynamoRoot/dynamo.tar && \
     tar -xf /home/dynamoRoot/dynamo.tar -C /home/dynamoRoot && \
     rm /home/dynamoRoot/dynamo.tar
-RUN mv /home/dynamoRoot/MCRLinux/sys/os/glnxa64/libstdc++.so.6 /home/dynamoRoot/MCRLinux/sys/os/glnxa64/libstdc++.so.6.orig
 
-#Dynamo cuda setting
-RUN cd /home/dynamoRoot/cuda && source config.sh && make clean && make all
+RUN mv /home/dynamoRoot/MCRLinux/sys/os/glnxa64/libstdc++.so.6 /home/dynamoRoot/MCRLinux/sys/os/glnxa64/libstdc++.so.6.orig
 
 ## For autoalign_dynamo : modified for non-interactive docker install.
 RUN git clone https://github.com/KJYoung/autoalign_dynamo.git && \
-    cd /autoalign_dynamo && ./install.sh
+    cd /autoalign_dynamo && \
+    ./install.sh
 
 RUN echo 'alias imodcfg="source $IMOD_DIR/IMOD-linux.sh"' >> ~/.bashrc
+RUN echo 'alias dynamocfg="source /home/dynamoRoot/dynamo_activate_linux_shipped_MCR.sh"' >> ~/.bashrc
+RUN echo 'alias autoalign="octave --persist /opt/autoalign_dynamo/autoalign_activate.m"' >> ~/.bashrc
 
 # For automated GUI connection.
 COPY ./setupGUI.sh ./home/

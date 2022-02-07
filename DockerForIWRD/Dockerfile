@@ -10,9 +10,7 @@ RUN apt-get update && apt-get install -y \
     libxcb-xinerama0 libxrender1 libxkbcommon-dev \
     xauth \
     fontconfig \
-    mesa-utils xorg \ 
-    git g++ cmake \
-    build-essential \
+    mesa-utils xorg git \
     pip libxt6 \
     nvidia-cuda-toolkit
 
@@ -22,6 +20,7 @@ RUN wget https://download.java.net/openjdk/jdk11/ri/openjdk-11+28_linux-x64_bin.
 
 RUN ln -s /usr/bin/python3 /usr/bin/python
 
+ENV PATH /jdk-11/bin:$PATH
 ENV IMOD_DIR /usr/local/IMOD
 ENV LIBGL_ALWAYS_INDIRECT 1
 ENV QT_XKB_CONFIG_ROOT /usr/share/X11/xkb
