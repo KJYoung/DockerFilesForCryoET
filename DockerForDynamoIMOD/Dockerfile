@@ -49,7 +49,7 @@ RUN mkdir /home/dynamoRoot/ && \
 RUN mv /home/dynamoRoot/MCRLinux/sys/os/glnxa64/libstdc++.so.6 /home/dynamoRoot/MCRLinux/sys/os/glnxa64/libstdc++.so.6.orig
 
 #Dynamo cuda setting
-RUN cd /home/dynamoRoot/cuda && source config.sh && make clean && make all
+RUN cd /home/dynamoRoot/cuda && ./config.sh && make clean && make all
 
 ## For autoalign_dynamo : modified for non-interactive docker install.
 RUN git clone https://github.com/KJYoung/autoalign_dynamo.git && \
