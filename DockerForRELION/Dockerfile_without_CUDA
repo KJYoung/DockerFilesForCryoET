@@ -11,8 +11,7 @@ RUN apt-get update && apt-get install -y \
     mpi-default-dev \
     libfftw3-dev \
     libtiff-dev \
-    xauth libx11-dev pkg-config libxft-dev \
-    nvidia-cuda-toolkit
+    xauth libx11-dev pkg-config libxft-dev
 # Last Line for the GUI environment.
 
 RUN git clone https://github.com/3dem/relion.git && \
@@ -20,8 +19,10 @@ RUN git clone https://github.com/3dem/relion.git && \
     git checkout master && \
     mkdir build && \
     cd build && \
-    cmake -DCMAKE_C_COMPILER=$(which gcc-8) -DCMAKE_CXX_COMPILER=$(which g++-8) -DWITH_CUDA=ON .. && \
+    cmake .. && \
     make && \
+    #mkdir /home/relionRoot && \
+    #cmake -DCMAKE_INSTALL_PREFIX=/home/relionRoot/ && \
     make install
 
 COPY ./setupGUI.sh ./home/

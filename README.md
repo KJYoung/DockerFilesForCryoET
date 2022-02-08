@@ -108,17 +108,22 @@ Then, you can see the generating procedure immediately and the generated image w
   --net=host   
     Port related works : Refer   
   -p <Host port number>:<Container port number>   
-    Open the specific container’s port and connect to the specific host port   
+    Open the specific container’s port and connect to the specific host port  
+  --gpus all   
+    Enable all GPU devices in the docker container(Nvidia-docker installastion required.)   
+    + Installation of nvidia-cuda-toolkit is recommended! 
 ### Examples   
   ```
   $docker run -it --rm --net=host -e DISPLAY --name gui_test gui_kjy
   $docker run -it --rm --name no_gui gui_kjy
   $docker run -it --rm --name disk_share -v /home/kimv/:/home/exinput eman2_kjy
+  $docker run --rm -it --net=host -e DISPLAY --gpus all -v /home/kimv/FROMWINDOW/:/cdata --name all pipe3_dynamo:matlab "$(xauth list | grep vision)"
   ```   
   
 ### Other things
 * You can get out of the current docker container with “$exit”.   
 * Detach from the current container : ``` Ctrl + P then Ctrl + Q ```   
+* "Detach and commit" is quite useful.   
 * Attach into the detached container : ``` docker attach "container name"```
 * [***Detach and Attach***](https://stackoverflow.com/questions/19688314/how-do-you-attach-and-detach-from-dockers-process)   
 ## Docker GUI(Write based on Mac environment)
@@ -219,10 +224,11 @@ Dockerfiles and More informations are available at https://github.com/KJYoung/Do
 There is many python files can be executed. The following figure shows the procedure to test EMAN2(without GUI, we cannot execute e2display.py).
   
 ### [Dynamo](https://wiki.dynamo.biozentrum.unibas.ch/w/index.php/Main_Page) + [IMOD](https://bio3d.colorado.edu/imod/doc/guide.html)
-#### Extended : with [**autoalign_dynamo**](https://github.com/alisterburt/autoalign_dynamo)[Modified for Docker env.]
-  This version is incomplete due to the MATLAB! IMOD is also required for the valid operation of autoalign_dynamo as specified in its github readme's prerequisite.
+#### Extended : [**autoalign_dynamo**](https://github.com/alisterburt/autoalign_dynamo)[Modified for Docker env.]
+#### Extended : [**dynamo2m**](https://github.com/alisterburt/dynamo2m)
 #### Helpful reference : [Dynamo GPU configuration](https://wiki.dynamo.biozentrum.unibas.ch/w/index.php/GPU#Installation)
-#### Dynamo + IMOD + dynamo2m + autoalign_dynamo
+  This version is incomplete due to the MATLAB!   
+  IMOD is also required for the valid operation of autoalign_dynamo as specified in its github readme's prerequisite.
 ```
    $docker pull jykim157/dynamoimod:base
    $docker run --rm -it --name <NAME> jykim157/dynamoimod:base
