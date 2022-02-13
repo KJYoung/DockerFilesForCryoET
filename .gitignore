@@ -1,2 +1,3 @@
 *.zip
-DockerForWarp/warpDLLGPU_forWindow_withoutGPUAcceleration/
+.DS_Store
+DockerForWarp/warpDLLGPU_forWindow_withoutGPUAcceleration/*.dll
