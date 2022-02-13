@@ -231,7 +231,7 @@ There is many python files can be executed. The following figure shows the proce
   IMOD is also required for the valid operation of autoalign_dynamo as specified in its github readme's prerequisite.
 ```
    $docker pull jykim157/dynamoimod:base
-   $docker run --rm -it --name <NAME> jykim157/dynamoimod:base
+   $docker run --rm -it --name --net=host -e DISPLAY --gpus all -v <DATA DIRECTORY>:/cdata <NAME> jykim157/dynamoimod:base
   
    $$ cd matlab && ./install (First, you should install the MATLAB with the following 5 toolboxes.)
    $$ ^P and ^Q (Then, ctrl P + Q to pause the current container and execute the following.)
