@@ -25,11 +25,9 @@ ENV LIBRARY_PATH $LIBRARY_PATH:/usr/local/lib
 ENV LD_LIBRARY_PATH $LD_LIBRARY_PATH:/usr/local/lib
 
 ################################################################## TIME CONSUMING BUILD ##############################################
-COPY ./gtom_modified_CMakeLists.txt /warpRoot/gtom
-RUN  mv /warpRoot/gtom/gtom_modified_CMakeLists.txt /warpRoot/gtom/CMakeLists.txt && mkdir /warpRoot/gtom/build && \
-    cd /warpRoot/gtom/build && cmake .. && make
+#GTOM compilation
+RUN cd /warpRoot/gtom/build && cmake .. && make
 
-ENV temp 1
 #Liblion warp
 RUN cd /warpRoot && git clone https://github.com/KJYoung/liblion.git && git clone https://github.com/KJYoung/warp.git
 #GPUAcceleration.dll
