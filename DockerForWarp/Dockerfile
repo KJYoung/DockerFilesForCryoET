@@ -57,7 +57,10 @@ RUN cp /warpRoot/warp/buildGPU/GPUAcceleration.dll /warpRoot/warp/build && cd /w
 	# Additional (not required module adding)
 	../WarpLib/Tools/NamedSerializableObject.cs ../WarpLib/WorkerWrapper.cs
 
-RUN echo 'alias cdw="cd /warpRoot/warp/build"' >> ~/.bashrc
+RUN echo 'alias cdw="cd /warpRoot/warp/build"' >> ~/.bashrc && \
+    echo 'alias cr="csc /warn:0 /unsafe /out:main.exe /reference:/warpRoot/warp/build/WarpLib.dll /reference:/warpRoot/warp/build/CommandLine.dll FileDiscoverer.cs warpMain.cs && mono main.exe"' >> ~/.bashrc && \
+	# Caution : execution of main.exe requires a WarpLib.dll in the same directory!!!
+    echo 'alias wk="cd /cdata/warpCLI"' >> ~/.bashrc
 
 #Wine 7.0
 # wine 7.0 install https://wiki.winehq.org/Ubuntu
