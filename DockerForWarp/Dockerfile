@@ -13,8 +13,7 @@ RUN apt-get update && apt-get install -y gnupg ca-certificates && \
 
 RUN apt-get install -y git vim wget cmake g++ nvidia-cuda-toolkit wine software-properties-common libfftw3-dev
 
-RUN mkdir warpRoot && cd /warpRoot/ && \
-    #git clone https://github.com/dtegunov/gtom.git
+RUN mkdir /warpRoot && cd /warpRoot && \
     git clone https://github.com/KJYoung/gtom.git
 
 # Install Tensorflow
@@ -51,9 +50,14 @@ RUN cp /warpRoot/warp/buildGPU/GPUAcceleration.dll /warpRoot/warp/build && cd /w
 	../WarpLib/TensorFlowSharp/OperationsExtras.cs ../WarpLib/TensorFlowSharp/Queue.cs ../WarpLib/TensorFlowSharp/Tensorflow.cs \
 	../WarpLib/NoiseNet3D.cs ../WarpLib/BoxNet2.cs ../WarpLib/BoxNet.cs ../WarpLib/Tools/TFHelper.cs ../WarpLib/Headers/Tiff.cs \
 	../WarpLib/NoiseNet2D.cs \
-    	../WarpLib/Sociology/DataSource.cs ../WarpLib/Sociology/Species.cs ../WarpLib/Sociology/Particle.cs ../WarpLib/Tools/DefectModel.cs \
-    	../WarpLib/Headers/EER.cs ../WarpLib/TiltSeries.cs ../WarpLib/LinearGrid4D.cs \
-    	../WarpLib/Tools/EERNative.cs ../WarpLib/Tools/Zernike.cs ../WarpLib/Tools/Timing.cs ../WarpLib/Tools/TiffNative.cs
+    # I added these for the compile
+	../WarpLib/Sociology/DataSource.cs ../WarpLib/Sociology/Species.cs ../WarpLib/Sociology/Particle.cs ../WarpLib/Tools/DefectModel.cs \
+    ../WarpLib/Headers/EER.cs ../WarpLib/TiltSeries.cs ../WarpLib/LinearGrid4D.cs \
+    ../WarpLib/Tools/EERNative.cs ../WarpLib/Tools/Zernike.cs ../WarpLib/Tools/Timing.cs ../WarpLib/Tools/TiffNative.cs \
+	# Additional (not required module adding)
+	../WarpLib/Tools/NamedSerializableObject.cs ../WarpLib/WorkerWrapper.cs
+
+RUN echo 'alias cdw="cd /warpRoot/warp/build"' >> ~/.bashrc
 
 #Wine 7.0
 # wine 7.0 install https://wiki.winehq.org/Ubuntu
