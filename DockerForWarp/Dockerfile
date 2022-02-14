@@ -23,7 +23,7 @@ RUN wget "https://storage.googleapis.com/tensorflow/libtensorflow/libtensorflow-
 ENV LIBRARY_PATH $LIBRARY_PATH:/usr/local/lib
 ENV LD_LIBRARY_PATH $LD_LIBRARY_PATH:/usr/local/lib
 
-################################################################## TIME CONSUMING BUILD ##############################################
+################################################## TIME CONSUMING BUILD ##############################################
 #GTOM compilation
 RUN cd /warpRoot/gtom/build && cmake .. && make
 
@@ -58,7 +58,7 @@ RUN cp /warpRoot/warp/buildGPU/GPUAcceleration.dll /warpRoot/warp/build && cd /w
 	../WarpLib/Tools/NamedSerializableObject.cs ../WarpLib/WorkerWrapper.cs
 
 RUN echo 'alias cdw="cd /warpRoot/warp/build"' >> ~/.bashrc && \
-    echo 'alias cr="csc /warn:0 /unsafe /out:main.exe /reference:/warpRoot/warp/build/WarpLib.dll /reference:/warpRoot/warp/build/CommandLine.dll FileDiscoverer.cs warpMain.cs && mono main.exe"' >> ~/.bashrc && \
+    echo 'alias cr="csc /warn:0 /unsafe /out:main.exe /reference:/warpRoot/warp/build/WarpLib.dll /reference:/warpRoot/warp/build/CommandLine.dll FileDiscoverer.cs TomoParticleExport.cs warpMain.cs && mono main.exe"' >> ~/.bashrc && \
 	# Caution : execution of main.exe requires a WarpLib.dll in the same directory!!!
     echo 'alias wk="cd /cdata/warpCLI"' >> ~/.bashrc
 
