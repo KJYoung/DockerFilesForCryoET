@@ -4,36 +4,38 @@ ENV TZ Asia/Seoul
 ENV DEBIAN_FRONTEND noninteractive
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
-RUN apt-get update && apt-get install -y gnupg ca-certificates && \
+RUN apt-get update && apt-get install -y dirmngr gnupg apt-transport-https ca-certificates && \
     apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 3FA7E0328081BFF6A14DA29AA6A19B38D3D831EF && \
-    echo "deb https://download.mono-project.com/repo/ubuntu stable-focal main" | tee /etc/apt/sources.list.d/mono-official-stable.list && \
+    echo "deb https://download.mono-project.com/repo/ubuntu stable-bionic main" | tee /etc/apt/sources.list.d/mono-official-stable.list && \
     apt-get update && \
     apt-get install -y mono-complete
 # above is for the installation of mono-complete for ubuntu 20.04
 
-RUN apt-get install -y git vim wget cmake g++ nvidia-cuda-toolkit wine software-properties-common libfftw3-dev
+RUN apt-get install -y git vim wget cmake g++ software-properties-common libfftw3-dev libtiff-dev nvidia-cuda-toolkit 
+
+# Install Tensorflow
+RUN wget "https://storage.googleapis.com/tensorflow/libtensorflow/libtensorflow-gpu-linux-x86_64-2.6.0.tar.gz" -O /libtf-gpu-linux.tar.gz && \
+    tar -C /usr/local -xzf /libtf-gpu-linux.tar.gz && ldconfig
+ENV LIBRARY_PATH $LIBRARY_PATH:/usr/local/lib
+ENV LD_LIBRARY_PATH $LD_LIBRARY_PATH:/usr/local/lib
 
 RUN mkdir /warpRoot && cd /warpRoot && \
     git clone https://github.com/KJYoung/gtom.git
 
-# Install Tensorflow
-RUN wget "https://storage.googleapis.com/tensorflow/libtensorflow/libtensorflow-gpu-linux-x86_64-2.6.0.tar.gz" -O /warpRoot/libtf-gpu-linux.tar.gz && \
-    tar -C /usr/local -xzf /warpRoot/libtf-gpu-linux.tar.gz && \
-    ldconfig
-ENV LIBRARY_PATH $LIBRARY_PATH:/usr/local/lib
-ENV LD_LIBRARY_PATH $LD_LIBRARY_PATH:/usr/local/lib
-
-################################################## TIME CONSUMING BUILD ##############################################
 #GTOM compilation
 RUN cd /warpRoot/gtom/build && cmake .. && make
-
+################################################## TIME CONSUMING BUILD ##############################################
 #Liblion warp
+ENV reclone 2
 RUN cd /warpRoot && git clone https://github.com/KJYoung/liblion.git && git clone https://github.com/KJYoung/warp.git
 #GPUAcceleration.dll
 RUN cd /warpRoot/warp/buildGPU && make
 #WarpLib.dll
+ENV dlladd 1
 COPY ./warpDLL/*.dll /warpRoot/warp/build/
-RUN cp /warpRoot/warp/buildGPU/GPUAcceleration.dll /warpRoot/warp/build && cd /warpRoot/warp/build && \
+RUN cp /warpRoot/warp/buildGPU/GPUAcceleration.dll /warpRoot/warp/build && \
+    cp /warpRoot/warp/buildGPU/GPUAcceleration.dll /cdata/warpCLI && \ 
+	cd /warpRoot/warp/build && \
 	csc -debug -warn:0 /t:library /out:WarpLib.dll /unsafe \
 	/reference:System.Drawing.dll /reference:Accord.dll /reference:Accord.Math.dll /reference:Accord.Math.Core.dll /reference:MathNet.Numerics.dll \
 	/reference:BitMiracle.LibTiff.NET.dll /reference:System.Numerics.dll -linkresource:GPUAcceleration.dll \
@@ -50,15 +52,16 @@ RUN cp /warpRoot/warp/buildGPU/GPUAcceleration.dll /warpRoot/warp/build && cd /w
 	../WarpLib/TensorFlowSharp/OperationsExtras.cs ../WarpLib/TensorFlowSharp/Queue.cs ../WarpLib/TensorFlowSharp/Tensorflow.cs \
 	../WarpLib/NoiseNet3D.cs ../WarpLib/BoxNet2.cs ../WarpLib/BoxNet.cs ../WarpLib/Tools/TFHelper.cs ../WarpLib/Headers/Tiff.cs \
 	../WarpLib/NoiseNet2D.cs \
-    # I added these for the compile
-	../WarpLib/Sociology/DataSource.cs ../WarpLib/Sociology/Species.cs ../WarpLib/Sociology/Particle.cs ../WarpLib/Tools/DefectModel.cs \
+	../WarpLib/Sociology/*.cs ../WarpLib/Tools/DefectModel.cs \
     ../WarpLib/Headers/EER.cs ../WarpLib/TiltSeries.cs ../WarpLib/LinearGrid4D.cs \
     ../WarpLib/Tools/EERNative.cs ../WarpLib/Tools/Zernike.cs ../WarpLib/Tools/Timing.cs ../WarpLib/Tools/TiffNative.cs \
-	# Additional (not required module adding)
-	../WarpLib/Tools/NamedSerializableObject.cs ../WarpLib/WorkerWrapper.cs
+	../WarpLib/Tools/NamedSerializableObject.cs ../WarpLib/WorkerWrapper.cs \
+	../WarpLib/*.cs ../WarpLib/Tools/*.cs ../WarpLib/Headers/*.cs && \
+	cp /warpRoot/warp/build/WarpLib.dll /cdata/warpCLI && \
+    cd /warpRoot/warp/build && csc -warn:0 /out:WarpWorker.exe /reference:/warpRoot/warp/build/WarpLib.dll ../WarpWorker/Program.cs
 
 RUN echo 'alias cdw="cd /warpRoot/warp/build"' >> ~/.bashrc && \
-    echo 'alias cr="csc /warn:0 /unsafe /out:main.exe /reference:/warpRoot/warp/build/WarpLib.dll /reference:/warpRoot/warp/build/CommandLine.dll FileDiscoverer.cs TomoParticleExport.cs warpMain.cs && mono main.exe"' >> ~/.bashrc && \
+    echo 'alias cr="csc /warn:0 /unsafe /out:main.exe /reference:/warpRoot/warp/build/WarpLib.dll /reference:/warpRoot/warp/build/Newtonsoft.Json.dll /reference:/warpRoot/warp/build/CommandLine.dll Options.cs FileDiscoverer.cs TomoParticleExport.cs warpMain.cs && mono main.exe"' >> ~/.bashrc && \
 	# Caution : execution of main.exe requires a WarpLib.dll in the same directory!!!
     echo 'alias wk="cd /cdata/warpCLI"' >> ~/.bashrc
 
