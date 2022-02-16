@@ -6,7 +6,7 @@ RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
 RUN apt-get update && apt-get install -y dirmngr gnupg apt-transport-https ca-certificates && \
     apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 3FA7E0328081BFF6A14DA29AA6A19B38D3D831EF && \
-    echo "deb https://download.mono-project.com/repo/ubuntu stable-bionic main" | tee /etc/apt/sources.list.d/mono-official-stable.list && \
+    echo "deb https://download.mono-project.com/repo/ubuntu stable-focal main" | tee /etc/apt/sources.list.d/mono-official-stable.list && \
     apt-get update && \
     apt-get install -y mono-complete
 # above is for the installation of mono-complete for ubuntu 20.04
@@ -26,7 +26,6 @@ RUN mkdir /warpRoot && cd /warpRoot && \
 RUN cd /warpRoot/gtom/build && cmake .. && make
 ################################################## TIME CONSUMING BUILD ##############################################
 #Liblion warp
-ENV reclone 2
 RUN cd /warpRoot && git clone https://github.com/KJYoung/liblion.git && git clone https://github.com/KJYoung/warp.git
 #GPUAcceleration.dll
 RUN cd /warpRoot/warp/buildGPU && make
@@ -36,7 +35,7 @@ RUN cp /warpRoot/warp/buildGPU/GPUAcceleration.dll /warpRoot/warp/build && \
 	cd /warpRoot/warp/build && \
 	csc -debug -warn:0 /t:library /out:WarpLib.dll /unsafe \
 	/reference:System.Drawing.dll /reference:Accord.dll /reference:Accord.Math.dll /reference:Accord.Math.Core.dll /reference:MathNet.Numerics.dll \
-	/reference:BitMiracle.LibTiff.NET.dll /reference:System.Numerics.dll -linkresource:GPUAcceleration.dll \
+	/reference:BitMiracle.LibTiff.NET.dll /reference:System.Numerics.dll \
 	../WarpLib/GPUQueue.cs ../WarpLib/NMAMap.cs ../WarpLib/Tools/ByteReaderBE.cs ../WarpLib/Tools/Matrix3.cs \
 	../WarpLib/Headers/DM4.cs ../WarpLib/Tools/ClusterTrieste.cs ../WarpLib/Tools/Matrix4.cs \
 	../WarpLib/CPU.cs ../WarpLib/Headers/EM.cs ../WarpLib/Tools/FloatVectors.cs ../WarpLib/Tools/PhysicsHelper.cs \
@@ -51,17 +50,17 @@ RUN cp /warpRoot/warp/buildGPU/GPUAcceleration.dll /warpRoot/warp/build && \
 	../WarpLib/NoiseNet3D.cs ../WarpLib/BoxNet2.cs ../WarpLib/BoxNet.cs ../WarpLib/Tools/TFHelper.cs ../WarpLib/Headers/Tiff.cs \
 	../WarpLib/NoiseNet2D.cs \
 	../WarpLib/Sociology/*.cs ../WarpLib/Tools/DefectModel.cs \
-    ../WarpLib/Headers/EER.cs ../WarpLib/TiltSeries.cs ../WarpLib/LinearGrid4D.cs \
-    ../WarpLib/Tools/EERNative.cs ../WarpLib/Tools/Zernike.cs ../WarpLib/Tools/Timing.cs ../WarpLib/Tools/TiffNative.cs \
+	../WarpLib/Headers/EER.cs ../WarpLib/TiltSeries.cs ../WarpLib/LinearGrid4D.cs \
+	../WarpLib/Tools/EERNative.cs ../WarpLib/Tools/Zernike.cs ../WarpLib/Tools/Timing.cs ../WarpLib/Tools/TiffNative.cs \
 	../WarpLib/Tools/NamedSerializableObject.cs ../WarpLib/WorkerWrapper.cs \
 	../WarpLib/*.cs ../WarpLib/Tools/*.cs ../WarpLib/Headers/*.cs && \
-	cd /warpRoot/warp/build && csc -warn:0 /out:WarpWorker.exe /reference:/warpRoot/warp/build/WarpLib.dll ../WarpWorker/Program.cs
+	csc -warn:0 /out:WarpWorker.exe /reference:WarpLib.dll ../WarpWorker/Program.cs
 
 RUN echo 'alias cdw="cd /warpRoot/warp/build"' >> ~/.bashrc && \
     echo 'alias cr="csc /warn:0 /unsafe /out:warp.exe /reference:/warpRoot/warp/build/WarpLib.dll /reference:/warpRoot/warp/build/Newtonsoft.Json.dll /reference:/warpRoot/warp/build/CommandLine.dll Options.cs FileDiscoverer.cs TomoParticleExport.cs warpMain.cs && mono warp.exe"' >> ~/.bashrc && \
-	# Caution : execution of main.exe requires a WarpLib.dll in the same directory!!!
     echo 'alias wk="cd /cdata/warpCLI"' >> ~/.bashrc && \
 	echo 'alias wkcfg="cp /warpRoot/warp/buildGPU/GPUAcceleration.dll /cdata/warpCLI && cp /warpRoot/warp/build/WarpLib.dll /cdata/warpCLI "' >> ~/.bashrc
+	# Caution : execution of main.exe requires a WarpLib.dll in the same directory!!!
 
 #Wine 7.0
 # wine 7.0 install https://wiki.winehq.org/Ubuntu
