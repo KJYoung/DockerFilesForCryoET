@@ -31,10 +31,8 @@ RUN cd /warpRoot && git clone https://github.com/KJYoung/liblion.git && git clon
 #GPUAcceleration.dll
 RUN cd /warpRoot/warp/buildGPU && make
 #WarpLib.dll
-ENV dlladd 1
 COPY ./warpDLL/*.dll /warpRoot/warp/build/
-RUN cp /warpRoot/warp/buildGPU/GPUAcceleration.dll /warpRoot/warp/build && \
-    cp /warpRoot/warp/buildGPU/GPUAcceleration.dll /cdata/warpCLI && \ 
+RUN cp /warpRoot/warp/buildGPU/GPUAcceleration.dll /warpRoot/warp/build && \ 
 	cd /warpRoot/warp/build && \
 	csc -debug -warn:0 /t:library /out:WarpLib.dll /unsafe \
 	/reference:System.Drawing.dll /reference:Accord.dll /reference:Accord.Math.dll /reference:Accord.Math.Core.dll /reference:MathNet.Numerics.dll \
@@ -57,13 +55,13 @@ RUN cp /warpRoot/warp/buildGPU/GPUAcceleration.dll /warpRoot/warp/build && \
     ../WarpLib/Tools/EERNative.cs ../WarpLib/Tools/Zernike.cs ../WarpLib/Tools/Timing.cs ../WarpLib/Tools/TiffNative.cs \
 	../WarpLib/Tools/NamedSerializableObject.cs ../WarpLib/WorkerWrapper.cs \
 	../WarpLib/*.cs ../WarpLib/Tools/*.cs ../WarpLib/Headers/*.cs && \
-	cp /warpRoot/warp/build/WarpLib.dll /cdata/warpCLI && \
-    cd /warpRoot/warp/build && csc -warn:0 /out:WarpWorker.exe /reference:/warpRoot/warp/build/WarpLib.dll ../WarpWorker/Program.cs
+	cd /warpRoot/warp/build && csc -warn:0 /out:WarpWorker.exe /reference:/warpRoot/warp/build/WarpLib.dll ../WarpWorker/Program.cs
 
 RUN echo 'alias cdw="cd /warpRoot/warp/build"' >> ~/.bashrc && \
-    echo 'alias cr="csc /warn:0 /unsafe /out:main.exe /reference:/warpRoot/warp/build/WarpLib.dll /reference:/warpRoot/warp/build/Newtonsoft.Json.dll /reference:/warpRoot/warp/build/CommandLine.dll Options.cs FileDiscoverer.cs TomoParticleExport.cs warpMain.cs && mono main.exe"' >> ~/.bashrc && \
+    echo 'alias cr="csc /warn:0 /unsafe /out:warp.exe /reference:/warpRoot/warp/build/WarpLib.dll /reference:/warpRoot/warp/build/Newtonsoft.Json.dll /reference:/warpRoot/warp/build/CommandLine.dll Options.cs FileDiscoverer.cs TomoParticleExport.cs warpMain.cs && mono warp.exe"' >> ~/.bashrc && \
 	# Caution : execution of main.exe requires a WarpLib.dll in the same directory!!!
-    echo 'alias wk="cd /cdata/warpCLI"' >> ~/.bashrc
+    echo 'alias wk="cd /cdata/warpCLI"' >> ~/.bashrc && \
+	echo 'alias wkcfg="cp /warpRoot/warp/buildGPU/GPUAcceleration.dll /cdata/warpCLI && cp /warpRoot/warp/build/WarpLib.dll /cdata/warpCLI "' >> ~/.bashrc
 
 #Wine 7.0
 # wine 7.0 install https://wiki.winehq.org/Ubuntu
