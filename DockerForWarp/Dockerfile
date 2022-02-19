@@ -56,6 +56,8 @@ RUN cp /warpRoot/warp/buildGPU/GPUAcceleration.dll /warpRoot/warp/build && \
 	../WarpLib/*.cs ../WarpLib/Tools/*.cs ../WarpLib/Headers/*.cs && \
 	csc -warn:0 /out:WarpWorker.exe /reference:WarpLib.dll ../WarpWorker/Program.cs
 
+# ENV LD_LIBRARY_PATH /usr/local/cuda-11.4/lib64:/usr/local/lib:/cdata/cuda/lib64:/cdata/warpCLI # secondRun, thirdRun version.
+
 RUN echo 'alias cdw="cd /warpRoot/warp/build"' >> ~/.bashrc && \
     echo 'alias cr="csc /warn:0 /unsafe /out:warp.exe /reference:/warpRoot/warp/build/WarpLib.dll /reference:/warpRoot/warp/build/Newtonsoft.Json.dll /reference:/warpRoot/warp/build/CommandLine.dll Options.cs FileDiscoverer.cs TomoParticleExport.cs warpMain.cs && mono warp.exe"' >> ~/.bashrc && \
     echo 'alias wk="cd /cdata/warpCLI"' >> ~/.bashrc && \
