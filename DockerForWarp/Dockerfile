@@ -56,6 +56,7 @@ RUN cp /warpRoot/warp/buildGPU/GPUAcceleration.dll /warpRoot/warp/build && \
 	../WarpLib/*.cs ../WarpLib/Tools/*.cs ../WarpLib/Headers/*.cs && \
 	csc -warn:0 /out:WarpWorker.exe /reference:WarpLib.dll ../WarpWorker/Program.cs
 
+##################### IMPORTANT ####################
 # ENV LD_LIBRARY_PATH /usr/local/cuda-11.4/lib64:/usr/local/lib:/cdata/cuda/lib64:/cdata/warpCLI # secondRun, thirdRun version.
 
 RUN echo 'alias cdw="cd /warpRoot/warp/build"' >> ~/.bashrc && \
