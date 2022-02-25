@@ -1,0 +1,61 @@
+FROM nvidia/cuda:11.4.0-devel-ubuntu20.04
+
+ENV TZ Asia/Seoul
+ENV DEBIAN_FRONTEND noninteractive
+RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
+
+#################### For prerequisite of PyTom #################
+# For general setup + python&pip 3.7
+RUN apt-get update && apt-get install -y git vim wget software-properties-common nvidia-cuda-toolkit csh& \
+    add-apt-repository -y ppa:deadsnakes/ppa && apt-get install -y python3.7 python3-distutils && \
+    ln -s /usr/bin/python3.7 /usr/bin/python && \
+    wget https://bootstrap.pypa.io/get-pip.py -O get-pip.py && \
+    python3.7 get-pip.py
+
+#Just for the stable running.
+RUN ln -sf /usr/bin/python3.7 /usr/bin/python3 
+######## For openmpi #########
+RUN wget https://download.open-mpi.org/release/open-mpi/v4.1/openmpi-4.1.1.tar.gz && \
+    tar -xvf openmpi-4.1.1.tar.gz && rm openmpi-4.1.1.tar.gz && \
+    cd openmpi-4.1.1 && ./configure --prefix=/usr/local && make all install && \
+    ldconfig
+RUN apt-get install -y fftw3 gcc-7 libxslt-dev swig libpython3.7-dev libfftw3-dev libboost-all-dev && \
+    update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-7 60 && \
+    pip install numpy boost lxml PyQt5 pyqtgraph mrcfile
+# libxml2 already installed.
+
+######## FOR IMOD #############
+RUN apt-get install -y libglu1-mesa libxi-dev libxmu-dev libglu1-mesa-dev \
+    libxcb-xinerama0 libxrender1 libxkbcommon-dev \
+    xauth \
+    fontconfig \
+    mesa-utils xorg 
+RUN wget https://download.java.net/openjdk/jdk11/ri/openjdk-11+28_linux-x64_bin.tar.gz && \
+    tar -xvf openjdk-11+28_linux-x64_bin.tar.gz && \
+    rm openjdk-11+28_linux-x64_bin.tar.gz
+ENV PATH=/jdk-11/bin:$PATH \
+    IMOD_DIR=/usr/local/IMOD \
+    LIBGL_ALWAYS_INDIRECT=1 \
+    XDG_RUNTIME_DIR=/tmp/runtime-root
+# ENV QT_XKB_CONFIG_ROOT /usr/share/X11/xkb
+# ENV FONTCONFIG_PATH /etc/fonts
+RUN wget https://bio3d.colorado.edu/imod/AMD64-RHEL5/imod_4.11.12_RHEL7-64_CUDA10.1.sh && \
+    sh imod_4.11.12_RHEL7-64_CUDA10.1.sh -y && \
+    rm imod_4.11.12_RHEL7-64_CUDA10.1.sh && \
+    mkdir /tmp/runtime-root && \
+    chmod 0700 /tmp/runtime-root
+RUN echo 'alias imodcfg="source $IMOD_DIR/IMOD-linux.sh"' >> ~/.bashrc
+
+##### For MotionCor2 ##########
+COPY ./MotionCor2 ./
+RUN echo 'alias motioncor2="/MotionCor2"' >> ~/.bashrc
+
+ENV LD_LIBRARY_PATH /usr/local/nvidia/lib:/usr/local/nvidia/lib64:/usr/local/lib:/usr/lib/python3.7/config-3.7m-x86_64-linux-gnu:/usr/lib/x86_64-linux-gnu/
+
+RUN git clone --recursive https://github.com/FridoF/PyTom.git pytom && cd pytom/pytomc && \
+    python3.7 compile.py --pythonVersion 3.7 --target all --includeDir /usr/include/python3.7m /usr/include /usr/local/lib/python3.7/dist-packages/numpy/core/include/numpy/
+
+COPY ./setupGUI.sh /home/
+ENTRYPOINT ["bash", "./home/setupGUI.sh"]
+
+#python3.7 compile.py --pythonVersion 3.7 --target all --includeDir /usr/include/python3.7m /usr/include /usr/local/lib/python3.7/dist-packages/numpy/core/include/numpy/

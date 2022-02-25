@@ -1,0 +1,49 @@
+FROM nvidia/cuda:11.4.0-devel-ubuntu20.04
+
+ENV TZ Asia/Seoul
+ENV DEBIAN_FRONTEND noninteractive
+RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
+
+#################### For prerequisite of PyTom #################
+# For general setup + python&pip 3.7 + install stuffs.
+RUN apt-get update && apt-get install -y git vim wget software-properties-common nvidia-cuda-toolkit libglu1-mesa libxi-dev libxmu-dev libglu1-mesa-dev \
+    libxcb-xinerama0 libxrender1 libxkbcommon-dev xauth fontconfig mesa-utils xorg \
+    fftw3 gcc-7 libxslt-dev swig libfftw3-dev libboost-all-dev csh && \
+    update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-7 60 && \
+    add-apt-repository -y ppa:deadsnakes/ppa && apt-get install -y python3.7 python3-distutils && \
+    ln -s /usr/bin/python3.7 /usr/bin/python && \
+    wget https://bootstrap.pypa.io/get-pip.py -O get-pip.py && \
+    python3.7 get-pip.py && apt-get install -y libpython3.7-dev && ln -sf /usr/bin/python3.7 /usr/bin/python3 && \
+    pip install numpy lxml PyQt5 pyqtgraph mrcfile scipy
+
+# wget stuffs + install them.
+RUN wget https://download.open-mpi.org/release/open-mpi/v4.1/openmpi-4.1.1.tar.gz && \
+    wget https://download.java.net/openjdk/jdk11/ri/openjdk-11+28_linux-x64_bin.tar.gz && \
+    wget https://bio3d.colorado.edu/imod/AMD64-RHEL5/imod_4.11.12_RHEL7-64_CUDA10.1.sh && \
+    tar -xvf openmpi-4.1.1.tar.gz && rm openmpi-4.1.1.tar.gz && \
+    tar -xvf openjdk-11+28_linux-x64_bin.tar.gz && rm openjdk-11+28_linux-x64_bin.tar.gz && \
+    sh imod_4.11.12_RHEL7-64_CUDA10.1.sh -y && \
+    rm imod_4.11.12_RHEL7-64_CUDA10.1.sh && \
+    mkdir /tmp/runtime-root && \
+    chmod 0700 /tmp/runtime-root && \
+    cd openmpi-4.1.1 && ./configure --prefix=/usr/local && make all install && ldconfig
+
+######## FOR IMOD #############
+ENV PATH=/jdk-11/bin:$PATH \
+    IMOD_DIR=/usr/local/IMOD \
+    LIBGL_ALWAYS_INDIRECT=1 \
+    XDG_RUNTIME_DIR=/tmp/runtime-root \
+    LD_LIBRARY_PATH=/usr/local/nvidia/lib:/usr/local/nvidia/lib64:/usr/local/lib:/usr/lib/python3.7/config-3.7m-x86_64-linux-gnu:/usr/lib/x86_64-linux-gnu/
+
+RUN git clone --recursive https://github.com/FridoF/PyTom.git pytom && cd pytom/pytomc && \
+    python3.7 compile.py --pythonVersion 3.7 --target all --includeDir /usr/include/python3.7m /usr/include /usr/local/lib/python3.7/dist-packages/numpy/core/include/numpy/
+  
+RUN echo 'alias imodcfg="source $IMOD_DIR/IMOD-linux.sh"' >> ~/.bashrc && \
+    echo 'alias motioncor2="/MotionCor2"' >> ~/.bashrc
+    echo 'alias pytomcfg="export LD_LIBRARY_PATH='/usr/local/lib:/usr/lib/x86_64-linux-gnu/:/usr/lib/python3.7/config-3.7m-x86_64-linux-gnu:/usr/lib/x86_64-linux-gnu/:/pytom/pytomc/sh_alignment/SpharmonicKit27/:/pytom/pytomc/sh_alignment/frm/swig/:/pytom/external/lib/:/pytom/pytomc/nufft/:/pytom/pytomc/libs/libtomc/libs':$LD_LIBRARY_PATH && export PATH='/jdk-11/bin:/usr/local/nvidia/bin:/usr/local/cuda/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/pytom/convert/':$PATH && export  PYTHONPATH='/pytom/pytomc:/pytom/pytomc/sh_alignment/frm/swig/:/pytom/external/lib/:/pytom/external/lib/python3.7/site-packages/:/pytom/pytomc/nufft/:/:/pytom/pytomc/swigModules':$PYTHONPATH"' >> ~/.bashrc
+
+##### For MotionCor2 ##########
+COPY ./MotionCor2 ./
+COPY ./setupGUI.sh /home/
+
+ENTRYPOINT ["bash", "./home/setupGUI.sh"]
