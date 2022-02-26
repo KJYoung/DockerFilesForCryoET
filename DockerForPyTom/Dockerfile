@@ -14,7 +14,8 @@ RUN apt-get update && apt-get install -y git vim wget software-properties-common
     ln -s /usr/bin/python3.7 /usr/bin/python && \
     wget https://bootstrap.pypa.io/get-pip.py -O get-pip.py && \
     python3.7 get-pip.py && apt-get install -y libpython3.7-dev && ln -sf /usr/bin/python3.7 /usr/bin/python3 && \
-    pip install numpy lxml PyQt5 pyqtgraph mrcfile scipy
+    pip install numpy lxml PyQt5 pyqtgraph mrcfile scipy wget
+# pip install wget is for me
 
 # wget stuffs + install them.
 RUN wget https://download.open-mpi.org/release/open-mpi/v4.1/openmpi-4.1.1.tar.gz && \
@@ -39,8 +40,8 @@ RUN git clone --recursive https://github.com/FridoF/PyTom.git pytom && cd pytom/
     python3.7 compile.py --pythonVersion 3.7 --target all --includeDir /usr/include/python3.7m /usr/include /usr/local/lib/python3.7/dist-packages/numpy/core/include/numpy/
   
 RUN echo 'alias imodcfg="source $IMOD_DIR/IMOD-linux.sh"' >> ~/.bashrc && \
-    echo 'alias motioncor2="/MotionCor2"' >> ~/.bashrc
-    echo 'alias pytomcfg="export LD_LIBRARY_PATH='/usr/local/lib:/usr/lib/x86_64-linux-gnu/:/usr/lib/python3.7/config-3.7m-x86_64-linux-gnu:/usr/lib/x86_64-linux-gnu/:/pytom/pytomc/sh_alignment/SpharmonicKit27/:/pytom/pytomc/sh_alignment/frm/swig/:/pytom/external/lib/:/pytom/pytomc/nufft/:/pytom/pytomc/libs/libtomc/libs':$LD_LIBRARY_PATH && export PATH='/jdk-11/bin:/usr/local/nvidia/bin:/usr/local/cuda/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/pytom/convert/':$PATH && export  PYTHONPATH='/pytom/pytomc:/pytom/pytomc/sh_alignment/frm/swig/:/pytom/external/lib/:/pytom/external/lib/python3.7/site-packages/:/pytom/pytomc/nufft/:/:/pytom/pytomc/swigModules':$PYTHONPATH"' >> ~/.bashrc
+    echo 'alias motioncor2="/MotionCor2"' >> ~/.bashrc && \
+    echo 'alias pytomcfg="export LD_LIBRARY_PATH=/usr/local/lib:/usr/lib/x86_64-linux-gnu/:/usr/lib/python3.7/config-3.7m-x86_64-linux-gnu:/usr/lib/x86_64-linux-gnu/:/pytom/pytomc/sh_alignment/SpharmonicKit27/:/pytom/pytomc/sh_alignment/frm/swig/:/pytom/external/lib/:/pytom/pytomc/nufft/:/pytom/pytomc/libs/libtomc/libs:$LD_LIBRARY_PATH && export PATH=/jdk-11/bin:/usr/local/nvidia/bin:/usr/local/cuda/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/pytom/convert/:$PATH && export  PYTHONPATH=/pytom/pytomc:/pytom/pytomc/sh_alignment/frm/swig/:/pytom/external/lib/:/pytom/external/lib/python3.7/site-packages/:/pytom/pytomc/nufft/:/:/pytom/pytomc/swigModules:$PYTHONPATH"' >> ~/.bashrc
 
 ##### For MotionCor2 ##########
 COPY ./MotionCor2 ./
