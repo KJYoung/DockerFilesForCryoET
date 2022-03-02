@@ -1,7 +1,7 @@
 FROM nvidia/cuda:11.4.0-devel-ubuntu20.04
 
-ENV TZ Asia/Seoul
-ENV DEBIAN_FRONTEND noninteractive
+ENV TZ=Asia/Seoul \
+    DEBIAN_FRONTEND=noninteractive
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
 #################### For prerequisite of PyTom #################
@@ -47,5 +47,9 @@ RUN echo 'alias imodcfg="source $IMOD_DIR/IMOD-linux.sh"' >> ~/.bashrc && \
 ##### For MotionCor2 ##########
 COPY ./MotionCor2 ./
 COPY ./setupGUI.sh /home/
+
+# MRC viewer install. 
+# RUN apt-get install -y python3.7-tk && pip install napari[all] easygui && \
+#    git clone https://github.com/dzyla/MRC_napari_viewer.git mnv
 
 ENTRYPOINT ["bash", "./home/setupGUI.sh"]

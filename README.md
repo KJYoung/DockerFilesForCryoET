@@ -5,75 +5,88 @@
 ## Docker General
 
 * Docker is different from Virtual Machine! Docker engine is located in the upper level compared to host OS(Therefore, it is much faster[Memory access, File I/O, Network access, ...] than VM). More theoretical stuffs could be accessed from google:)
-* Before starting to work with docker, you might need to request the docker user permission to the Server administrator. If you want to check the permission, you can test with some commands(such as “$docker ps”, “$docker images”, ...)
+* Before starting to work with docker, you might need to request the docker user permission to the Server administrator. If you want to check the permission, you can test with some commands(such as `$docker ps`, `$docker images`, ...)
 * Docker helps you to make the independent environment for each programs or purpose. When we use Docker, there is two key concepts : Docker image, Docker container.
-    * We “build” the docker image with “Dockerfile” and “$docker build” command.
-    * We “run” the existing docker image as an individual docker container with “$docker run” command. We can iteratively make the docker container by the docker image.
+    * We “build” the docker image with “Dockerfile” and `$docker build` command.
+    * We “run” the existing docker image as an individual docker container with `$docker run` command. We can iteratively make the docker container by the docker image.
 * In summary, if you want to build a new docker image which can be instantiated into docker containers, you have to do just the following two things.
     * Write a “Dockerfile”
     * Build a “Docker image”
     * Then, you can make a docker container from the built docker image.
-* All of the docker commands are formatted as “$docker <command>” form.
-    * (ex.) $docker images, $docker ps, $docker build, $docker run, ... 
+* All of the docker commands are formatted as `$docker <command>` form.
+    * (ex.) `$docker images`, `$docker ps`, `$docker build`, `$docker run`, ... 
 
 ## Docker Commands..
 
-* search : Search the pre-existing images from the Dockerhub.
-    * (ex.) docker search <keyword>
 * pull : Download the docker image from the Dockerhub.
-    * (ex.) docker pull <image name>:<tag>
+    * (ex.) `docker pull <image name>:<tag>`
     * For  <tag>, you can just give “latest”.
 * images : Print all the docker images you have now.
     * (ex.) docker images
 * build : Make a docker image from the Dockerfile.
-    * (ex.) docker build <options> <location of Dockerfile>
+    * (ex.) `docker build <options> <location of Dockerfile>`
     * With --tag option, you can specify the tag of the images.
 * run : Make a docker container from the existing docker image.
-    * (ex.) docker run <options> <image name> <file to execute>
+    * (ex.) `docker run <options> <image name> <file to execute>`
     * Generally, you would use run command with -it, --name, --rm, (-e, --net=host [for GUI]) options.
 * ps : Print the list of running containers. (With -a option, also print the stopped containers)
-    * (ex.) docker ps -a
+    * (ex.) `docker ps -a`
 * rm, rmi : Remove a container or an image, respectively. (With -f option, force the remove)
-* There are many other commands(start, stop, restart, attach, history, cp, commit, diff, inspect, push, ...). However, if you just want to use already-built docker images, run command is sufficient for the purpose!
+* There are many other commands(start, stop, restart, attach, history, cp, commit, diff, inspect, push, ...). However, build&run command is sufficient for many situation.
   
 ## Docker Build & Run.
-### Write the Dockerfile.
-To build our own new docker image, we should make a Dockerfile. The following code block is the example of Dockerfile(modified from Dockerfile for Eman2).
+### 1. Start point for docker : Tutorial.
+1. Make a workspace directory. Let's assume "test" directory.   
+2. Make a file named "Dockerfile" in test directory.   
+3. Write just the following : ''' FROM ubuntu:20.04 '''   
+4. Execute the following : ''' docker build --tag testimage .   
+5. Execute the following : ''' docker run -it --rm --name testcontainer testimage
+### 2. Write Custom Dockerfile.
+To build our own docker image, we should modify the Dockerfile.   
+The following code block is the example of Dockerfile(NOT WORKING, JUST FOR THE SYNTAX EXAMPLE).
+
 ```
+# Specify the Base images : You can find these base images from hub.docker.com
 FROM ubuntu:latest
 
-# Comment  
-RUN apt-get update && apt-get install -y \
-    wget \
-    xauth \
-    mesa-utils libgl1-mesa-glx
+# Ex) Execute commands : Install packages
+RUN apt-get update && apt-get install -y [INSTALL PACKAGE NAMES]
 
-RUN wget "https://cryoem.bcm.edu/cryoem/static/software/release-2.91/eman2.91_sphire1.4_sparx.linux64.sh" -O /home/eman2.91.sh
+# Ex) Execute commands : Wget downloads
+RUN wget [Link] -O [Output File Directory]
 
+# Ex) Setting environment variable
 ENV PATH /root/eman2-sphire-sparx/bin:$PATH
 
-RUN conda install eman-deps=25 -c cryoem -c defaults -c conda-forge -y
-
+# Ex) Copy files from the same directory of the dockerfile into the image inside.
 COPY ./setupGUI.sh ./home/
-ENTRYPOINT ["bash", "./home/setupGUI.sh"]
 ```
   
-As you can see from the example above, Dockerfile has a simple grammar, ```“[COMMAND] [ARGUMENT]”```
+As you can see from the example above, Dockerfile has a simple grammar, `“[COMMAND] [ARGUMENT]”`
 * First of all, you have to specify the basis of your docker image with FROM.
-    * “FROM scratch” : basis as an empty image
-    * “FROM ubuntu:latest” : basis as an latest ubuntu image
+    * `FROM scratch` : basis as an empty image
+    * `FROM ubuntu:latest` : basis as an latest ubuntu image
+    * `FROM ubuntu:20.04` : specify the specific tag of the image.
+    * You can find these base images from [*Docker hub*](https://docs.docker.com/)
+
 * Then, you can specify what you want to do in the container.
     * MAINTAINER
         * Specify the image’s author metadata.
     * RUN
-        * Run the shell script or commands. During the docker image building, commands cannot get a user-input.   
-          Therefore, you have to deal with some input-needed commands.   
-          (ex. apt-get install commands should be used with -y options. Moreover, some program(such as tzdata, keyboard-configuration) require user-input during installation even with the -y option so that you have to deal with those problem.)
+        * Run the shell script or commands. During the docker image building, commands cannot get a user-input. Therefore, you have to deal with some user-input-required situations. (ex. apt-get install commands should be used with -y options. Moreover, some program(such as tzdata, keyboard-configuration) require user-input during installation even with the -y option so that you have to deal with those problem.)
+        * Most of the case, the following lines will help.
+          ```
+          ENV TZ=Asia/Seoul \
+          DEBIAN_FRONTEND=noninteractive
+          RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
+          ```
     * ENV
         * Set the environment variable. Don’t use ”=” sign.
         * (ex.) ENV PATH $PATH:/usr/local/bin
     * COPY
-        * Copy the file. The destination doesn’t include the file name(just its location!).
+        * Copy files from your working system to inside of your image.
+        * *File should be in the same directory with the current Dockerfile*
+        * *The destination doesn’t include the file name(just its location!).*
         * (ex.) COPY ./setupGUI.sh ./home/   
           : Copy from “./setupGUI.sh” to “./home/setupGUI.sh”
     * ENTRYPOINT
@@ -82,19 +95,17 @@ As you can see from the example above, Dockerfile has a simple grammar, ```“[C
         * (ex. with sh) ENTRYPOINT touch /home/test.txt
         * (ex. without sh) ENTRYPOINT [”/home/test.sh”]
         * (ex. without sh with parameter) ENTRYPOINT [”/home/test2.sh”, “--param1=1”, “--param2=2”]
-    * VOLUME
-        * equivalent with -v option of docker run command.
-    * ADD, CMD, EXPOSE, ...
+    * VOLUME, ADD, CMD, EXPOSE, ...
 
-## Build the Docker image.
+### 3. Build the Docker image.
 If you have valid Dockerfile, you can build the docker image with docker build command only. Let’s see an example. Assume you are in /home and /home/dockerForEMAN has the Dockerfile(filename is “Dockerfile” literally). Then, you can build the Docker image with one of the following commands.
 
   ```$ docker build --tag <Image Name> <path for dockerForEMAN directory>```
  
 Then, you can see the generating procedure immediately and the generated image with docker images command.
  
-## Run the Docker container.
-### Docker Run Options   
+### Run the Docker container.
+#### Docker Run Options   
   -it   
     For the interactive bash shell interaction with docker container.   
   --name <CONTAINER NAME>   
@@ -111,8 +122,11 @@ Then, you can see the generating procedure immediately and the generated image w
     Open the specific container’s port and connect to the specific host port  
   --gpus all   
     Enable all GPU devices in the docker container(Nvidia-docker installastion required.)   
-    + Installation of nvidia-cuda-toolkit is recommended! 
-### Examples   
+    + Installation of nvidia-cuda-toolkit is recommended!
+    + Specify the base image with the system-corresponding CUDA image!
+      + Ex. `FROM nvidia/cuda:11.4.0-devel-ubuntu20.04` if your system's cuda version is 11.4
+
+#### Examples   
   ```
   $docker run -it --rm --net=host -e DISPLAY --name gui_test gui_kjy
   $docker run -it --rm --name no_gui gui_kjy
@@ -123,9 +137,20 @@ Then, you can see the generating procedure immediately and the generated image w
 ### Other things
 * You can get out of the current docker container with “$exit”.   
 * Detach from the current container : ``` Ctrl + P then Ctrl + Q ```   
-* "Detach and commit" is quite useful.   
-* Attach into the detached container : ``` docker attach "container name"```
-* [***Detach and Attach***](https://stackoverflow.com/questions/19688314/how-do-you-attach-and-detach-from-dockers-process)   
+  * "Detach and commit" is quite useful.   
+  * Attach into the detached container : ``` docker attach "container name"```
+  * [***Detach and Attach***](https://stackoverflow.com/questions/19688314/how-do-you-attach-and-detach-from-dockers-process)  
+* If you meet the following messages, you can add the `network=host` option into docker build
+  ```
+    W: Failed to fetch http://archive.ubuntu.com/ubuntu/dists/focal/InRelease  Temporary failure resolving ‘archive.ubuntu.com’
+    W: Failed to fetch http://archive.ubuntu.com/ubuntu/dists/focal-updates/InRelease  Temporary failure resolving ‘archive.ubuntu.com’
+    W: Failed to fetch http://archive.ubuntu.com/ubuntu/dists/focal-backports/InRelease  Temporary failure resolving ‘archive.ubuntu.com’
+    W: Failed to fetch http://security.ubuntu.com/ubuntu/dists/focal-security/InRelease  Temporary failure resolving ‘security.ubuntu.com’
+    W: Some index files failed to download. They have been ignored, or old ones used instead.
+    ...
+    E: Unable to locate package wget
+  ```
+
 ## Docker GUI(Write based on Mac environment)
 ### Basic GUI Settings
 1. First, you have to make a connection between server and your Mac machine(marked as local below).
@@ -179,6 +204,8 @@ You should configure VcXsrv as following.
    1. Unmark Native opengl   
    2. Put "-ac" into "Additional parameters for VcXsrv"   
 
+## Docker with NVIDIA GPU
+First, your system is equipped with 
 ## Docker Images for Cryo-ET
 ```<NAME>``` : name for the container   
 $ : in the server.   
@@ -186,41 +213,41 @@ $ : in the server.
 Dockerfiles and More informations are available at https://github.com/KJYoung/DockerFilesForCryoET   
   
 ### MotionCor2
-```
-  $docker pull jykim157/motioncor2:base
-  $docker run --rm -it --name <NAME> jykim157/motioncor2:base
-  $$motioncor2 --help
-```
+  ```
+    $docker pull jykim157/motioncor2:base
+    $docker run --rm -it --name <NAME> jykim157/motioncor2:base
+    $$motioncor2 --help
+  ```
 ### Warp
 #### base : with pre-compiled version 1.0.0 and [**dynamo2m**](https://github.com/alisterburt/dynamo2m)
-```
-   $docker pull jykim157/warpcli:base
-   $docker run --rm -it --net=host -e DISPLAY --name <NAME> jykim157/warpcli:base "$(xauth list)"
-   $$warpcli
-   $$dynamo2warp
-```
+  ```
+    $docker pull jykim157/warpcli:base
+    $docker run --rm -it --net=host -e DISPLAY --name <NAME> jykim157/warpcli:base "$(xauth list)"
+    $$warpcli
+    $$dynamo2warp
+  ```
 #### with compiled version 1.0.9 : Currently trying to compile...   
    
 ### IMOD
-```
-   $docker pull jykim157/imod:base
-   $docker run --rm -it --name <NAME> --net=host -e DISPLAY jykim157/imod:base "$(xauth list)"
-   $$imodcfg
-   $$imod
-```
+  ```
+    $docker pull jykim157/imod:base
+    $docker run --rm -it --name <NAME> --net=host -e DISPLAY jykim157/imod:base "$(xauth list)"
+    $$imodcfg
+    $$imod
+  ```
 ### EMAN2
 #### with GUI
-```
-   $docker pull jykim157/eman2:base
-   $docker run --rm -it --name <NAME> --net=host -e DISPLAY jykim157/eman2:base "$(xauth list)"
-   $$e2version.py
-   // with GUI : $$e2display.py can be executed.
-```
+  ```
+    $docker pull jykim157/eman2:base
+    $docker run --rm -it --name <NAME> --net=host -e DISPLAY jykim157/eman2:base "$(xauth list)"
+    $$e2version.py
+    // with GUI : $$e2display.py can be executed.
+  ```
 #### without GUI
-```
-   $docker run --rm -it --name <NAME> jykim157/eman2:base
-   $$e2version.py
-```
+  ```
+    $docker run --rm -it --name <NAME> jykim157/eman2:base
+    $$e2version.py
+  ```
 There is many python files can be executed. The following figure shows the procedure to test EMAN2(without GUI, we cannot execute e2display.py).
   
 ### [Dynamo](https://wiki.dynamo.biozentrum.unibas.ch/w/index.php/Main_Page) + [IMOD](https://bio3d.colorado.edu/imod/doc/guide.html)
@@ -229,46 +256,46 @@ There is many python files can be executed. The following figure shows the proce
 #### Helpful reference : [Dynamo GPU configuration](https://wiki.dynamo.biozentrum.unibas.ch/w/index.php/GPU#Installation)
   This version is incomplete due to the MATLAB!   
   IMOD is also required for the valid operation of autoalign_dynamo as specified in its github readme's prerequisite.
-```
-   $docker pull jykim157/dynamoimod:base
-   $docker run --rm -it --name --net=host -e DISPLAY --gpus all -v <DATA DIRECTORY>:/cdata <NAME> jykim157/dynamoimod:base
-  
-   $$ cd matlab && ./install (First, you should install the MATLAB with the following 5 toolboxes.)
-   $$ ^P and ^Q (Then, ctrl P + Q to pause the current container and execute the following.)
-   $docker ps (Then, copy the container's ID.)
-   $docker commit <copied ID> <jykim157/dynamoimod:matlabinstall> (you can rename the image surely.)
-```
+  ```
+    $docker pull jykim157/dynamoimod:base
+    $docker run --rm -it --name --net=host -e DISPLAY --gpus all -v <DATA DIRECTORY>:/cdata <NAME> jykim157/dynamoimod:base
+    
+    $$ cd matlab && ./install (First, you should install the MATLAB with the following 5 toolboxes.)
+    $$ ^P and ^Q (Then, ctrl P + Q to pause the current container and execute the following.)
+    $docker ps (Then, copy the container's ID.)
+    $docker commit <copied ID> <jykim157/dynamoimod:matlabinstall> (you can rename the image surely.)
+  ```
    Required toolbox   
       * [**for autolalign_dynamo**] Computer vision toolbox, Curve fitting toolbox, Image processing toolbox, Parallel computing toolbox   
       * [**for execution of autoalign_dynamo**] Statistics and machine learning toolbox
    ########################## After the installation : Ready to use! ##########################
-```
-   $$source /home/dynamoRoot/dynamo_activate_linux_shipped_MCR.sh
-   $$ (execute dynamo project exe file! (standalong project))
-   OR
-   $$matlab
-      <For dynamo>
-      >> run /home/dynamoRoot/dynamo_activate.m
-      >> dcp, dcm, ...
-      <For autoalign_dynamo>
-      >> run /opt/autoalign_dynamo/autoalign_activate.m
-      >> dautoalign4warp, warp2catalogue, ...
+  ```
+    $$source /home/dynamoRoot/dynamo_activate_linux_shipped_MCR.sh
+    $$ (execute dynamo project exe file! (standalong project))
+    OR
+    $$matlab
+        <For dynamo>
+        >> run /home/dynamoRoot/dynamo_activate.m
+        >> dcp, dcm, ...
+        <For autoalign_dynamo>
+        >> run /opt/autoalign_dynamo/autoalign_activate.m
+        >> dautoalign4warp, warp2catalogue, ...
 
-   $$imodcfg
-   $$imod
-```
+    $$imodcfg
+    $$imod
+  ```
 ### CTFFIND4
-```
-   $docker pull jykim157/ctffind4:base
-   $docker run --rm -it --name <NAME> jykim157/ctffind4:base
-   $$ctffind
-```
+  ```
+    $docker pull jykim157/ctffind4:base
+    $docker run --rm -it --name <NAME> jykim157/ctffind4:base
+    $$ctffind
+  ```
 ### RELION : also GUI available(2022/02/04 Updated).
-```
-   $docker pull jykim157/relion:base
-   $docker run --rm -it --name <NAME> jykim157/relion:base
-   $$relion_... (There are many scripts to run. ex) relion_prepare_subtomogram)
-```
+  ```
+    $docker pull jykim157/relion:base
+    $docker run --rm -it --name <NAME> jykim157/relion:base
+    $$relion_... (There are many scripts to run. ex) relion_prepare_subtomogram)
+  ```
    
 ## Docker images are available also in the Dockerhub!
   * [MotionCor2 hub](https://hub.docker.com/r/jykim157/motioncor2)
@@ -279,7 +306,6 @@ There is many python files can be executed. The following figure shows the proce
   * [RELION hub](https://hub.docker.com/r/jykim157/relion)
   * [Dynamo hub : deprecated](https://hub.docker.com/r/jykim157/dynamo)
   * [IMOD hub : deprecated](https://hub.docker.com/r/jykim157/imod)
+
 ## TODO & Doing :   
-   * Runtime error for Warp
-   * RELION mpi, GPU, cuda
    * Warp, Dynamo Feature study
