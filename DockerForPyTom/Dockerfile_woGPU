@@ -1,5 +1,5 @@
-# Dockerfile for with GPU system.
-FROM nvidia/cuda:11.4.0-devel-ubuntu20.04
+# Dockerfile for without GPU system
+FROM ubuntu:20.04
 
 ENV TZ=Asia/Seoul \
     DEBIAN_FRONTEND=noninteractive
@@ -7,7 +7,7 @@ RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
 #################### For prerequisite of PyTom #################
 # For general setup + python&pip 3.7 + install stuffs.
-RUN apt-get update && apt-get install -y git vim wget software-properties-common nvidia-cuda-toolkit libglu1-mesa libxi-dev libxmu-dev libglu1-mesa-dev \
+RUN apt-get update && apt-get install -y git vim wget software-properties-common libglu1-mesa libxi-dev libxmu-dev libglu1-mesa-dev \
     libxcb-xinerama0 libxrender1 libxkbcommon-dev xauth fontconfig mesa-utils xorg \
     fftw3 gcc-7 libxslt-dev swig libfftw3-dev libboost-all-dev csh && \
     update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-7 60 && \
@@ -15,7 +15,7 @@ RUN apt-get update && apt-get install -y git vim wget software-properties-common
     ln -s /usr/bin/python3.7 /usr/bin/python && \
     wget https://bootstrap.pypa.io/get-pip.py -O get-pip.py && \
     python3.7 get-pip.py && apt-get install -y libpython3.7-dev && ln -sf /usr/bin/python3.7 /usr/bin/python3 && \
-    pip install numpy lxml PyQt5 pyqtgraph mrcfile scipy wget periodictable
+    pip install numpy lxml PyQt5 pyqtgraph mrcfile wget periodictable
 # pip install wget is for me
 # pip install periodictable is for volume building.
 

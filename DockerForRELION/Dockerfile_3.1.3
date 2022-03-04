@@ -1,0 +1,28 @@
+FROM ubuntu:latest
+
+ENV TZ=Asia/Seoul
+RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
+
+RUN apt-get update && apt-get install -y \
+    cmake \
+    git \
+    build-essential \
+    mpi-default-bin \
+    mpi-default-dev \
+    libfftw3-dev \
+    libtiff-dev \
+    xauth libx11-dev pkg-config libxft-dev \
+    nvidia-cuda-toolkit
+# Last Line for the GUI environment.
+
+RUN git clone https://github.com/3dem/relion.git && \
+    cd relion && \
+    git checkout master && \
+    mkdir build && \
+    cd build && \
+    cmake -DCMAKE_C_COMPILER=$(which gcc-8) -DCMAKE_CXX_COMPILER=$(which g++-8) -DWITH_CUDA=ON .. && \
+    make && \
+    make install
+
+COPY ./setupGUI.sh ./home/
+ENTRYPOINT ["bash", "./home/setupGUI.sh"]

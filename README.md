@@ -1,6 +1,6 @@
 # Working on a Docker
 ※ Terminal input is written as $echo form.   
-※ Disclaimer : The following information might not be the best way. However, it is correct way for now and the current settings of server(2022/Jan)...
+※ Disclaimer : The following information might not be the best way. However, it is correct way for now and the current settings of server(2022/March)...
 
 ## Docker General
 
@@ -167,11 +167,11 @@ Then, you can see the generating procedure immediately and the generated image w
         2. Search about more detailed information. At least, the program's name guide you to the right direction!
 2. Second, you have to make a connection between server and your docker container.
     * [server] Run the following command, and copy the output(if output is multiline, choose just one line or delete others to make single line). The output will change when you re-connect to the server. 
-    ```$ xauth list```
+      `$ xauth list`
     * [server] Execute docker run command with the following options.
     --net=host -e DISPLAY
     * [docker container] Run the following command.
-    ```$ xauth add <the copied output>```
+      `$ xauth add <the copied output>`
     * [docker container] Finished! However, you might see lots of graphics-related error when you execute the GUI-based program. You should solve these error then(Probably with “install something, set some environment variable, etc”).
 3. You can automate these steps.   
     a. Write .sh file like this(Let’s assume this file’s name “setupGUI.sh” and share a same location with Dockerfile).
@@ -207,7 +207,7 @@ You should configure VcXsrv as following.
 ## Docker with NVIDIA GPU
 First, your system is equipped with 
 ## Docker Images for Cryo-ET
-```<NAME>``` : name for the container   
+`<NAME>` : name for the container   
 $ : in the server.   
 \$$ : in the docker container.   
 Dockerfiles and More informations are available at https://github.com/KJYoung/DockerFilesForCryoET   
