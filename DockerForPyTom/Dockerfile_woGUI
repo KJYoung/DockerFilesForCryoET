@@ -1,4 +1,4 @@
-# Dockerfile for only PyTom ( without GUI, without IMOD ).
+# Dockerfile for my TomSim - dependencies : PyTom, EMAN2 ( without GUI, without IMOD ).
 FROM nvidia/cuda:11.4.0-devel-ubuntu20.04
 
 ENV TZ=Asia/Seoul \
@@ -28,13 +28,12 @@ ENV LD_LIBRARY_PATH=/usr/local/nvidia/lib:/usr/local/nvidia/lib64:/usr/local/lib
 
 RUN git clone --recursive https://github.com/FridoF/PyTom.git pytom && cd pytom/pytomc && \
     python3.7 compile.py --pythonVersion 3.7 --target all --includeDir /usr/include/python3.7m /usr/include /usr/local/lib/python3.7/dist-packages/numpy/core/include/numpy/
-  
-RUN echo 'alias motioncor2="/MotionCor2"' >> ~/.bashrc && \
-    echo 'alias pytomcfg="export LD_LIBRARY_PATH=/usr/local/lib:/usr/lib/x86_64-linux-gnu/:/usr/lib/python3.7/config-3.7m-x86_64-linux-gnu:/usr/lib/x86_64-linux-gnu/:/pytom/pytomc/sh_alignment/SpharmonicKit27/:/pytom/pytomc/sh_alignment/frm/swig/:/pytom/external/lib/:/pytom/pytomc/nufft/:/pytom/pytomc/libs/libtomc/libs:$LD_LIBRARY_PATH && export PATH=/jdk-11/bin:/usr/local/nvidia/bin:/usr/local/cuda/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/pytom/convert/:$PATH && export  PYTHONPATH=/pytom/pytomc:/pytom/pytomc/sh_alignment/frm/swig/:/pytom/external/lib/:/pytom/external/lib/python3.7/site-packages/:/pytom/pytomc/nufft/:/:/pytom/pytomc/swigModules:$PYTHONPATH"' >> ~/.bashrc
 
-##### For MotionCor2 ##########
-COPY ./MotionCor2 ./
+RUN wget https://cryoem.bcm.edu/cryoem/static/software/release-2.91/eman2.91_sphire1.4_sparx.linux64.sh -O /home/eman2.91.sh && \
+    bash ./home/eman2.91.sh
+ENV PATH /root/eman2-sphire-sparx/bin:$PATH
+RUN conda install eman-deps=25 -c cryoem -c defaults -c conda-forge -y
 
-# MRC viewer install. 
-# RUN apt-get install -y python3.7-tk && pip install napari[all] easygui && \
-#    git clone https://github.com/dzyla/MRC_napari_viewer.git mnv
+RUN echo 'alias pytomcfg="  export LD_LIBRARY_PATH=/usr/local/lib:/usr/lib/x86_64-linux-gnu/:/usr/lib/python3.7/config-3.7m-x86_64-linux-gnu:/usr/lib/x86_64-linux-gnu/:/pytom/pytomc/sh_alignment/SpharmonicKit27/:/pytom/pytomc/sh_alignment/frm/swig/:/pytom/external/lib/:/pytom/pytomc/nufft/:/pytom/pytomc/libs/libtomc/libs:$LD_LIBRARY_PATH && \
+                            export PATH=/jdk-11/bin:/usr/local/nvidia/bin:/usr/local/cuda/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/pytom/convert/:$PATH && \
+                            export PYTHONPATH=/root/eman2-sphire-sparx/lib/python3.7/site-packages:/pytom/pytomc:/pytom/pytomc/sh_alignment/frm/swig/:/pytom/external/lib/:/pytom/external/lib/python3.7/site-packages/:/pytom/pytomc/nufft/:/:/pytom/pytomc/swigModules:$PYTHONPATH"' >> ~/.bashrc
