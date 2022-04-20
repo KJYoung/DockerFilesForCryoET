@@ -13,7 +13,7 @@ COPY ./InSilicoTEMwithSRC.zip /
 RUN apt-get update && apt-get install -y git vim wget software-properties-common xauth dbus-x11 unzip && \
     apt-get install -y libglu1-mesa libxi-dev libxmu-dev libglu1-mesa-dev libxcb-xinerama0 libxrender1 libxkbcommon-dev fontconfig mesa-utils xorg libxt6 && \
     cd /home/ && mkdir matlab && unzip -q matlab.zip -d matlab && \
-    mkadir /InSilicoTEM && cd / && unzip -q InSilicoTEMwithSRC.zip -d InSilicoTEM
+    mkdir /InSilicoTEM && cd / && unzip -q InSilicoTEMwithSRC.zip -d InSilicoTEM
 
 COPY ./startup.m /home/matlab
 ################# Working... #######################
