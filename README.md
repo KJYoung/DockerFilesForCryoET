@@ -126,6 +126,8 @@ Then, you can see the generating procedure immediately and the generated image w
     + Installation of nvidia-cuda-toolkit is recommended!
     + Specify the base image with the system-corresponding CUDA image!
       + Ex. `FROM nvidia/cuda:11.4.0-devel-ubuntu20.04` if your system's cuda version is 11.4
+  --ipc=host
+    If there are some "shared memory" issue, specify this option might helpful.
 
 #### Examples   
   ```
