@@ -127,8 +127,8 @@ Then, you can see the generating procedure immediately and the generated image w
     + Specify the base image with the system-corresponding CUDA image!
       + Ex. `FROM nvidia/cuda:11.4.0-devel-ubuntu20.04` if your system's cuda version is 11.4
   --ipc=host
-    If there are some "shared memory" issue, specify this option might helpful.
-
+    If there are some "shared memory" issue, specify this option might helpful.   
+    If you need more information, refer [docs.docker.com](https://docs.docker.com/engine/reference/run/#ipc-settings---ipc)
 #### Examples   
   ```
   $docker run -it --rm --net=host -e DISPLAY --name gui_test gui_kjy

@@ -13,12 +13,15 @@ RUN apt-get update && apt-get install -y git vim wget software-properties-common
     add-apt-repository -y ppa:deadsnakes/ppa && apt-get install -y python3.7 python3-distutils && \
     ln -s /usr/bin/python3.7 /usr/bin/python && \
     wget https://bootstrap.pypa.io/get-pip.py -O get-pip.py && \
+    apt-get install -y python3.7-distutils && \
     python3.7 get-pip.py && apt-get install -y libpython3.7-dev && ln -sf /usr/bin/python3.7 /usr/bin/python3 && \
     pip install numpy lxml PyQt5 pyqtgraph mrcfile scipy wget periodictable && \
     apt-get install -y libcudnn8
     # for NT2C
 # pip install wget is for me
 # pip install periodictable is for volume building.
+# apt-get install -y python3.7-distutils was introduced for errors in DEVBOX002 (2022/06/13)
+
 
 # wget stuffs + install them. (Not required..?)
 RUN wget https://download.open-mpi.org/release/open-mpi/v4.1/openmpi-4.1.1.tar.gz && \
