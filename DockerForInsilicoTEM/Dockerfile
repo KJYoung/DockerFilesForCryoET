@@ -17,7 +17,7 @@ RUN apt-get update && apt-get install -y git vim wget software-properties-common
 
 COPY ./startup.m /home/matlab
 ################# Working... #######################
-RUN wget https://qiftp.tudelft.nl/diplib/2.9/dipimage_2.9_lin64.tbz && tar -xjf dipimage_2.9_lin64.tbz && \
+RUN wget https://qiftp.tudelft.nl/diplib/2.9/dipimage_2.9_lin64.tbz --no-check-certificate && tar -xjf dipimage_2.9_lin64.tbz && \
     mkdir diplibDemo && wget https://qiftp.tudelft.nl/diplib/images.zip && unzip -q images.zip -d diplibDemo
 ENV LD_LIBRARY_PATH=/usr/lib/x86_64-linux-gnu/:/dip/Linuxa64/lib/
 ENTRYPOINT ["bash", "./home/setupGUI.sh"]
