@@ -1,3 +1,4 @@
+# Dynamo + autoalign_dynamo + IMOD + Dynamo2m + GUI.
 FROM ubuntu:latest
 
 ENV DEBIAN_FRONTEND noninteractive
@@ -8,11 +9,8 @@ RUN apt-get update && apt-get install -y \
     wget vim python3 \
     libglu1-mesa libxi-dev libxmu-dev libglu1-mesa-dev \
     libxcb-xinerama0 libxrender1 libxkbcommon-dev \
-    xauth \
-    fontconfig \
-    mesa-utils xorg git \
-    pip libxt6 \
-    nvidia-cuda-toolkit
+    xauth fontconfig mesa-utils xorg git \
+    pip libxt6 nvidia-cuda-toolkit
 
 RUN wget https://download.java.net/openjdk/jdk11/ri/openjdk-11+28_linux-x64_bin.tar.gz && \
     tar -xvf openjdk-11+28_linux-x64_bin.tar.gz && \
