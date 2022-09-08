@@ -7,7 +7,11 @@ ENV DEBIAN_FRONTEND noninteractive
 
 # Install..
 RUN apt-get update && apt-get install -y \
-    wget pip libxt6 octave git xauth
+    wget pip libxt6 git xauth unzip \
+    libglu1-mesa libxi-dev libxmu-dev libglu1-mesa-dev \
+    libxcb-xinerama0 libxrender1 libxkbcommon-dev \
+    fontconfig mesa-utils xorg git \
+    pip libxt6 nvidia-cuda-toolkit
 RUN pip install gdown
 
 RUN gdown https://drive.google.com/uc?id=1Pffjfwu-EXmEzYC5DGSp8YqAPCtg7ye0
@@ -25,10 +29,10 @@ RUN git clone https://github.com/KJYoung/autoalign_dynamo.git && \
     cd /autoalign_dynamo && \
     ./install.sh
 
-ENV LIBGL_ALWAYS_INDIRECT 1
-RUN echo 'alias dynamocfg="source /home/dynamoRoot/dynamo_activate_linux_shipped_MCR.sh"' >> ~/.bashrc
-RUN echo 'alias autoalign="octave --persist /opt/autoalign_dynamo/autoalign_activate.m"' >> ~/.bashrc
+COPY ./matlab.zip ./
+RUN mkdir matlab && unzip -q matlab.zip -d matlab
 
+ENV LIBGL_ALWAYS_INDIRECT 1
 # For automated GUI connection.
 COPY ./setupGUI.sh ./home/
 ENTRYPOINT ["bash", "./home/setupGUI.sh"]

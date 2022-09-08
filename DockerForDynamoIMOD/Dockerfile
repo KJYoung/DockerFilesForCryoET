@@ -1,5 +1,6 @@
 # Dynamo + autoalign_dynamo + IMOD + Dynamo2m + GUI.
-FROM ubuntu:latest
+# FROM ubuntu:latest
+FROM nvidia/cuda:11.6.0-devel-ubuntu20.04
 
 ENV DEBIAN_FRONTEND noninteractive
 ENV TZ Asia/Seoul

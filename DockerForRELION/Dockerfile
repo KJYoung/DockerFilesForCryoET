@@ -1,5 +1,5 @@
 # This Dockerfile is for RELION 4.0
-FROM nvidia/cuda:11.4.0-devel-ubuntu20.04
+FROM nvidia/cuda:11.6.0-devel-ubuntu20.04
 
 ENV TZ=Asia/Seoul \
     DEBIAN_FRONTEND=noninteractive
