@@ -1,4 +1,5 @@
-FROM ubuntu:latest
+# Matlab + Dynamo + AutoAlignDynamo
+FROM nvidia/cuda:11.6.0-devel-ubuntu20.04
 
 # For Non-interactive docker install.
 ENV TZ Asia/Seoul
@@ -15,6 +16,7 @@ RUN apt-get update && apt-get install -y \
 RUN pip install gdown
 
 RUN gdown https://drive.google.com/uc?id=1Pffjfwu-EXmEzYC5DGSp8YqAPCtg7ye0
+
 #link format is slightly different with provided form.
 
 RUN mkdir /home/dynamoRoot/ && \
