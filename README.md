@@ -309,6 +309,3 @@ There is many python files can be executed. The following figure shows the proce
   * [RELION hub](https://hub.docker.com/r/jykim157/relion)
   * [Dynamo hub : deprecated](https://hub.docker.com/r/jykim157/dynamo)
   * [IMOD hub : deprecated](https://hub.docker.com/r/jykim157/imod)
-
-## TODO & Doing :   
-   * Warp, Dynamo Feature study
